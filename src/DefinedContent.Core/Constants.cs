@@ -8,6 +8,6 @@ namespace DefinedContent
 {
 	public static class Constants
 	{
-		public const string CONFIG_DIRECTORY = "~/App_Data/DefinedContent/";
+		public const string CONFIG_DIRECTORY = @"App_Plugins\Defined Content\Configs";
 	}
 }

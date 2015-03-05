@@ -204,7 +204,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\dummy.txt" />
     <Content Include="packages.config" />
+    <Content Include="umbraco\Views\DefinedContent\Delete.html" />
+    <Content Include="umbraco\Views\DefinedContent\Edit.html" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Partials\Grid\Editors\Textstring.cshtml" />
     <Content Include="Views\Partials\Grid\Editors\Rte.cshtml" />
@@ -246,6 +249,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Plugins\Defined Content\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DefinedContent.UI\DefinedContent.UI.csproj">
+      <Project>{15187b08-0b1f-4868-af4b-fe1775051b66}</Project>
+      <Name>DefinedContent.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

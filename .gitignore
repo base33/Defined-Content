@@ -1,0 +1,5 @@
+/src/DefinedContent.Core/bin
+obj
+/src/DefinedContent.Sandbox/bin
+/src/DefinedContent.Sandbox/*.user
+/src/*.suo

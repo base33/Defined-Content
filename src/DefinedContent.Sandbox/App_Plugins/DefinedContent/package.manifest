@@ -1,0 +1,5 @@
+﻿{   
+    javascript: [
+		"~/app_plugins/definedcontent/backoffice/definedcontent.controllers.js"
+    ]
+}

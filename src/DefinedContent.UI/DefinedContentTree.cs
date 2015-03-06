@@ -22,7 +22,7 @@ namespace DefinedContent.UI
                 // empty tree
                 var tree = new TreeNodeCollection()
                 {
-                    CreateTreeNode("1", id, new FormDataCollection("somequerystring=2"), "Bob's News Root", "icon-anchor")
+                    CreateTreeNode("Bobs Something", id, new FormDataCollection("somequerystring=2"), "Bob's News Root", "icon-anchor")
                 };
 
                 // but if we wanted to add nodes - 
@@ -46,11 +46,11 @@ namespace DefinedContent.UI
             //// duplicate this section for more than one icon
             var m = new MenuItem("create", "Create");
             m.Icon = "add";
-            m.AdditionalData.Add("parent", id);
+            m.NavigateToRoute("/settings/definedContent/create/" + id);
             menu.Items.Add(m);
 
             if (id != "-1")
-                menu.Items.Add<ActionDelete>("Delete");
+                menu.Items.Add<ActionDelete>("Delete", additionalData: new Dictionary<string, object> { { "id", id } });
 
             return menu;
         }

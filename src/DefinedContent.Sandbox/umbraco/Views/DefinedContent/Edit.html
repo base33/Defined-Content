@@ -1,1 +1,60 @@
-﻿<h1>The edit pane</h1>
+﻿<form name="personForm"
+      ng-controller="People.PersonEditController"
+      ng-show="loaded"
+      ng-submit="save(person)"
+      val-form-manager>
+    <umb-panel>
+        <umb-header>
+
+            <div class="span7">
+                <umb-content-name placeholder="@placeholders_entername"
+                                  ng-model="person.firstName" />
+            </div>
+
+            <div class="span5">
+                <div class="btn-toolbar pull-right umb-btn-toolbar">
+                    <umb-options-menu ng-show="currentNode"
+                                      current-node="currentNode"
+                                      current-section="{{currentSection}}">
+                    </umb-options-menu>
+                </div>
+            </div>
+        </umb-header>
+
+        <div class="umb-panel-body umb-scrollable row-fluid">
+            <div class="tab-content form-horizontal" style="padding-bottom: 90px">
+                <div class="umb-pane">
+
+
+
+                    <umb-control-group label="First name" description="Person's first name'">
+                        <input type="text" class="umb-editor umb-textstring" ng-model="person.firstName" required />
+                    </umb-control-group>
+
+                    <umb-control-group label="Last name" description="Person's last name'">
+                        <input type="text" class="umb-editor umb-textstring" ng-model="person.lastName" required />
+                    </umb-control-group>
+
+                    <umb-control-group label="Picture" description="Person's picture'">
+
+                        <umb-media-picker ng-model="person.pictureId" />
+
+                    </umb-control-group>
+
+                    <div class="umb-tab-buttons" detect-fold>
+                        <div class="btn-group">
+                            <button type="submit" data-hotkey="ctrl+s" class="btn btn-success">
+                                <localize key="buttons_save">Save</localize>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </umb-panel>
+</form>
+
+
+

@@ -1,8 +1,8 @@
 /src/DefinedContent.Core/bin
 obj
 /src/DefinedContent.Sandbox/bin
-/src/DefinedContent.Sandbox/*.user
-/src/*.suo
+*.user
+*.suo
 
 /src/DefinedContent.UI/bin
 /src/DefinedContent.Sandbox/App_Data/Logs

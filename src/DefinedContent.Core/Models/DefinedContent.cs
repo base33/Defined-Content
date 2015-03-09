@@ -47,19 +47,27 @@ namespace DefinedContent
 
 		#endregion
 
-		#region Public Static Methods
+		#region Public Methods
 
-		public static int GetId(string key)
+		public int GetId(string key)
 		{
-			if (!Current.KeyToNodeIdCache.ContainsKey(key))
+			if (!this.KeyToNodeIdCache.ContainsKey(key))
 				throw new Exception("Unknown key " + key);
 
-			return Current.KeyToNodeIdCache[key];
+			return this.KeyToNodeIdCache[key];
 		}
 
-		#endregion
+		public DefinedContentItem GetDefinedContentItem(string key)
+		{
+			var item = (from ci in this.ContentItems
+						where ci.Key == key
+						select ci).FirstOrDefault();
 
-		#region Public Methods
+			if (item == null)
+				throw new Exception("Unknown key " + key);
+
+			return item;
+		}
 
 		/// <summary>
 		/// Reloads XML configs, ensures all content exists and rebuilds the defined content cache
@@ -89,19 +97,14 @@ namespace DefinedContent
 				throw new Exception("Duplicate key detected " + item.Key);
 
 			this.KeyToNodeIdCache.Add(item.Key, resolvedNodeId);
-
 		}
 
-		#endregion
-
-		#region Create Content
-
-		/// <summary>
-		/// Ensures all defined content exists 
-		/// </summary>
-		protected void CreateContent()
+		public int? TryGetId(string key)
 		{
+			if (!this.KeyToNodeIdCache.ContainsKey(key))
+				return null;
 
+			return this.KeyToNodeIdCache[key];
 		}
 
 		#endregion
@@ -126,7 +129,7 @@ namespace DefinedContent
 
 			foreach (var xmlFile in xmlFiles)
 			{
-				LoadFromXmlFile(xmlFile);
+				this.ContentItems.Add(new DefinedContentItem(xmlFile.FullName));
 			}
 
 			var subDirs = configDirectory.GetDirectories();
@@ -137,25 +140,19 @@ namespace DefinedContent
 			}
 		}
 
-		private void LoadFromXmlFile(FileInfo xmlFile)
-		{
-			XElement xml = XElement.Load(xmlFile.FullName);
+		#endregion
 
-			foreach (XElement contentItemXml in xml.Descendants())
-			{
-				this.ContentItems.Add(new DefinedContentItem(contentItemXml));
-			}
+		#region Create Content
+
+		/// <summary>
+		/// Ensures all defined content exists 
+		/// </summary>
+		protected void CreateContent()
+		{
+
 		}
 
 		#endregion
-
-		public int? TryGetId(string key)
-		{
-			if (!this.KeyToNodeIdCache.ContainsKey(key))
-				return null;
-
-			return this.KeyToNodeIdCache[key];
-		}
 
 		#region Build Cache
 

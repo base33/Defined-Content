@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DefinedContent.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,13 @@ namespace DefinedContent.WebApi
 		[HttpGet]
 		public int GetId(string key)
 		{
-			return DefinedContent.GetId(key);
+			return DefinedContent.Current.GetId(key);
+		}
+
+		[HttpGet]
+		public DefinedContentItem GetDefinedContentItem(string key)
+		{
+			return DefinedContent.Current.GetDefinedContentItem(key);
 		}
 	}
 }

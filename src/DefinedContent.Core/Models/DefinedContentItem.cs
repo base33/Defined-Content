@@ -17,6 +17,7 @@ namespace DefinedContent.Models
 		public ResolutionType ResolveType { get; set; }
 		public string ResolveValue { get; set; }
 
+		public string FilePath { get; set; }
 
 		//Create Information
 		public string DocumentTypeId { get; protected set; }
@@ -29,8 +30,11 @@ namespace DefinedContent.Models
 
 		#region Constructors
 
-		public DefinedContentItem(XElement xml)
+		public DefinedContentItem(string filePath)
 		{
+			this.FilePath = filePath;
+
+			XElement xml = LoadXml(filePath);
 			LoadAttributes(xml);
 			LoadPropertyDefaults(xml);
 		}
@@ -38,6 +42,13 @@ namespace DefinedContent.Models
 		#endregion
 
 		#region Load from XML
+
+		private XElement LoadXml(string filePath)
+		{
+			XElement xml = XElement.Load(filePath);
+
+			return xml.Descendants().First();
+		}
 
 		private void LoadAttributes(XElement xml)
 		{

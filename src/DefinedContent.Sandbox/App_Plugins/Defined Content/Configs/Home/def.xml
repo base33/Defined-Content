@@ -1,0 +1,9 @@
+<definedContent>
+	<contentItem key="site_home"
+				 resolveType="XPath"
+				 resolveValue="./root/*[1]"
+				 
+				 docTypeId="umbHomePage"
+				 name="Home" parent="-1"
+				 parentType="ContentId" />
+</definedContent>

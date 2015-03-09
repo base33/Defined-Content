@@ -1,0 +1,9 @@
+<definedContent>
+	<contentItem key="site_home_redirect"
+				 resolveType="Key"
+				 resolveValue="site_home"
+				 
+				 docTypeId="umbHomePage"
+				 name="Home" parent="-1"
+				 parentType="ContentId" />
+</definedContent>

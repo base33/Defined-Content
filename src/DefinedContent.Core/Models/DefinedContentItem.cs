@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace DefinedContent.Models
 {
@@ -13,18 +14,35 @@ namespace DefinedContent.Models
 		#region Properties
 
 		//Resolve Information
+		[XmlAttribute]
 		public string Key { get; protected set; }
+
+		[XmlAttribute]
 		public ResolutionType ResolveType { get; set; }
+
+		[XmlAttribute]
 		public string ResolveValue { get; set; }
 
+		[XmlAttribute]
 		public string FilePath { get; set; }
 
 		//Create Information
+		[XmlAttribute]
 		public DefinedContentItemType ItemType { get; set; }
+
+		[XmlAttribute]
 		public string ContentTypeAlias { get; protected set; }
+
+		[XmlAttribute]
 		public string Name { get; protected set; }
+
+		[XmlAttribute]
 		public string Parent { get; protected set; }
+
+		[XmlAttribute]
 		public ResolutionType? ParentType { get; protected set; }
+
+		[XmlElement]
 		public List<PropertyDefault> PropertyDefaults { get; set; }
 
 		public List<DefinedContentItem> Children { get; set; }
@@ -39,9 +57,9 @@ namespace DefinedContent.Models
 
 			this.Children = new List<DefinedContentItem>();
 
-			XElement xml = LoadXml(filePath);
-			LoadAttributes(xml);
-			LoadPropertyDefaults(xml);
+			//XElement xml = LoadXml(filePath);
+			//LoadAttributes(xml);
+			//LoadPropertyDefaults(xml);
 		}
 
 		#endregion
@@ -120,7 +138,7 @@ namespace DefinedContent.Models
 
 		public bool CanCreate()
 		{
-			bool canCreate = true;
+			bool canCreate = ItemType == DefinedContentItemType.CreateAndResolve;
 
 			if (string.IsNullOrEmpty(ContentTypeAlias)
 				|| string.IsNullOrEmpty(Name)

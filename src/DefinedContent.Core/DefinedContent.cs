@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Umbraco.Core.Models;
@@ -38,15 +39,21 @@ namespace DefinedContent
 
 		UmbracoHelper _umbraco;
 		IContentService _contentService;
+		string _configDirectory;
 
 		#endregion
 
 		#region Constructors
 
-		protected DefinedContent()
+		public DefinedContent(string configDirectory = "")
 		{
 			_umbraco = new UmbracoHelper(UmbracoContext.Current);
 			_contentService = UmbracoContext.Current.Application.Services.ContentService;
+
+			if (string.IsNullOrEmpty(configDirectory))
+				_configDirectory = HttpContext.Current.Server.MapPath("~/") + Constants.CONFIG_DIRECTORY;
+			else
+				_configDirectory = configDirectory;
 
 			FullRefresh();
 		}
@@ -160,34 +167,37 @@ namespace DefinedContent
 		/// </summary>
 		protected void LoadXmlConfigs()
 		{
-			string xmlConfigDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + Constants.CONFIG_DIRECTORY;
-
-			DirectoryInfo configDirectory = new DirectoryInfo(xmlConfigDirectoryPath);
+			DirectoryInfo configDirectory = new DirectoryInfo(_configDirectory);
 
 			RecursivelyLoadDirectory(configDirectory);
 		}
 
 		private void RecursivelyLoadDirectory(DirectoryInfo configDirectory, DefinedContentItem parent = null)
 		{
-			var configFile = new FileInfo(configDirectory + "\\" + Constants.CONFIG_FILE_NAME);
+			DefinedContentItem item = null;
 
-			XmlSerializer serializer = new XmlSerializer(typeof(DefinedContentItem));
-			using (FileStream fs = System.IO.File.OpenRead(configFile.FullName))
+			string configFilePath = configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME;
+
+			if (System.IO.File.Exists(configFilePath))
 			{
-				DefinedContentItem item = (DefinedContentItem)serializer.Deserialize(fs);
-				item.FilePath = configFile.FullName;
+				XmlSerializer serializer = new XmlSerializer(typeof(DefinedContentItem));
 
-				if (parent == null)
-					this.ContentItems.Add(item);
-				else
-					parent.Children.Add(item);
-
-
-				var subDirs = configDirectory.GetDirectories();
-				foreach (var subDir in subDirs)
+				using (FileStream fs = System.IO.File.OpenRead(configFilePath))
 				{
-					RecursivelyLoadDirectory(subDir, item);
+					item = (DefinedContentItem)serializer.Deserialize(fs);
+					item.FilePath = configFilePath;
+
+					if (parent == null)
+						this.ContentItems.Add(item);
+					else
+						parent.Children.Add(item);
 				}
+			}
+
+			var subDirs = configDirectory.GetDirectories();
+			foreach (var subDir in subDirs)
+			{
+				RecursivelyLoadDirectory(subDir, item);
 			}
 		}
 

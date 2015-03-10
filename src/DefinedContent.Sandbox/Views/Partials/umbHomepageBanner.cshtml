@@ -1,4 +1,5 @@
 ﻿@inherits UmbracoTemplatePage
+@using DefinedContent
 
 @if (CurrentPage.HideBanner == false)
 {
@@ -13,7 +14,7 @@
 		    <!-- Only show the banner link if the link isn't empty -->
 			@if(link != "")
 			{
-            	<a href="@Umbraco.Content(link).Url" class="button">@Umbraco.Field("bannerLinkText")</a>
+            	<a href="@Umbraco.Content(DefinedContent.Id("home")).Url" class="button">@Umbraco.Field("bannerLinkText")</a>
             }
         </section>
     </div>

@@ -53,15 +53,11 @@ namespace DefinedContent.Models
 
 		public DefinedContentItem()
 		{
-
+			this.Children = new List<DefinedContentItem>();
 		}
 
 		public DefinedContentItem(string filePath)
 		{
-			this.FilePath = filePath;
-
-			this.Children = new List<DefinedContentItem>();
-
 			//XElement xml = LoadXml(filePath);
 			//LoadAttributes(xml);
 			//LoadPropertyDefaults(xml);

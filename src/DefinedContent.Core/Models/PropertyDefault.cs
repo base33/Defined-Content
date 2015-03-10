@@ -26,22 +26,27 @@ namespace DefinedContent.Models
 
 		#region Constructors
 
+		public PropertyDefault()
+		{
+
+		}
+
 		public PropertyDefault(XElement propertyDefaultXml)
 		{
-			LoadAttributes(propertyDefaultXml);
+			//LoadAttributes(propertyDefaultXml);
 		}
 
 		#endregion
 
-		#region Load from XML
+		//#region Load from XML
 
-		private void LoadAttributes(XElement propertyDefaultXml)
-		{
-			this.PropertyAlias = propertyDefaultXml.Attribute("propertyAlias").Value;
-			this.Value = propertyDefaultXml.Attribute("value").Value;
-			this.ValueType = (PropertyDefaultValueType)Enum.Parse(typeof(PropertyDefaultValueType), propertyDefaultXml.Attribute("valueType").Value);
-		}
+		//private void LoadAttributes(XElement propertyDefaultXml)
+		//{
+		//	this.PropertyAlias = propertyDefaultXml.Attribute("propertyAlias").Value;
+		//	this.Value = propertyDefaultXml.Attribute("value").Value;
+		//	this.ValueType = (PropertyDefaultValueType)Enum.Parse(typeof(PropertyDefaultValueType), propertyDefaultXml.Attribute("valueType").Value);
+		//}
 
-		#endregion
+		//#endregion
 	}
 }

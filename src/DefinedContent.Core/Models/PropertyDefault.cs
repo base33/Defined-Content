@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace DefinedContent.Models
 {
@@ -12,9 +13,13 @@ namespace DefinedContent.Models
 	{
 		#region Properties
 
+		[XmlAttribute]
 		public string PropertyAlias { get; protected set; }
-		
+
+		[XmlAttribute]
 		public PropertyDefaultValueType ValueType { get; set; }
+
+		[XmlAttribute]
 		public string Value { get; set; }
 
 		#endregion

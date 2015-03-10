@@ -187,7 +187,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefinedContentTree.cs" />
+    <Compile Include="Models\CreateModel.cs" />
+    <Compile Include="Models\DefinedContentModel.cs" />
+    <Compile Include="Models\PropertyMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebApi\DefinedContentEditorApiController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

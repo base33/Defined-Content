@@ -1,4 +1,5 @@
-﻿using DefinedContent.UI.Models;
+﻿using DefinedContent.UI.Helpers;
+using DefinedContent.UI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +17,7 @@ namespace DefinedContent.UI.WebApi
         {
             var item = DefinedContent.Current.GetDefinedContentItem(key);
 
-            
-
-            return new DefinedContentModel()
-            {
-                Key = "Forum Root",
-                ResolveType = "xpath",
-                ResolveValue = "$currentPage/Ancestor-or-self [@nodeName = 'Forum']",
-
-                CreateConfig = new CreateModel()
-                {
-                    Enabled = true,
-                    Name = "Forum",
-                    ContentTypeAlias = "Forum",
-                    PropertyMapping = new List<PropertyMapping>
-                    {
-                        new PropertyMapping { Alias = "postsPerPage", Value = "10" },
-                        new PropertyMapping { Alias = "allowSubscriptions", Value = "true" }
-                    }
-                }
-            };
+            return TypeConverter.CoreItemToViewModel(item);
         }
 
         [HttpPost]

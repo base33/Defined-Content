@@ -8,6 +8,7 @@ using umbraco.BusinessLogic.Actions;
 using Umbraco.Core;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
+using RealUmbraco = Umbraco;
 
 namespace DefinedContent.UI
 {
@@ -17,7 +18,7 @@ namespace DefinedContent.UI
         protected override TreeNodeCollection GetTreeNodes(string id, FormDataCollection queryStrings)
         {
             // check if we're rendering the root node's children
-            if (id == Constants.System.Root.ToInvariantString())
+            if (id == RealUmbraco.Core.Constants.System.Root.ToInvariantString())
             {
                 // empty tree
                 var tree = new TreeNodeCollection()

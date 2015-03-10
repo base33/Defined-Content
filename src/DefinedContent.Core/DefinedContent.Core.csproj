@@ -187,8 +187,11 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Enums\ResolutionType.cs" />
+    <Compile Include="Models\Cache\CacheItem.cs" />
+    <Compile Include="Models\Cache\RelativeCacheItem.cs" />
+    <Compile Include="Models\Cache\StaticCacheItem.cs" />
     <Compile Include="Models\DefinedContentItem.cs" />
-    <Compile Include="Models\DefinedContent.cs" />
+    <Compile Include="DefinedContent.cs" />
     <Compile Include="Models\PropertyDefault.cs" />
     <Compile Include="Enums\PropertyDefaultValueType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -198,6 +201,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

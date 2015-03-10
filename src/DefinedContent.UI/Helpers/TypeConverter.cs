@@ -13,7 +13,7 @@ namespace DefinedContent.UI.Helpers
     {
         public static DefinedContentModel CoreItemToViewModel(DefinedContentItem item)
         {
-            string resolveType = "":
+            string resolveType = "";
             switch(item.ResolveType)
             {
                 case ResolutionType.XPath:
@@ -21,6 +21,7 @@ namespace DefinedContent.UI.Helpers
                     break;
                 case ResolutionType.Key:
                     resolveType = "key";
+                    break;
                 case ResolutionType.ContentId:
                     resolveType = "contentId";
                     break;
@@ -35,7 +36,7 @@ namespace DefinedContent.UI.Helpers
 
                 CreateConfig = new CreateModel()
                 {
-                    Enabled = true, //TODO: item.CanCreate,
+                    Enabled = item.ItemType == DefinedContentItemType.CreateAndResolve,
                     Name = item.Name,
                     ContentTypeAlias = item.ContentTypeAlias,
                     PropertyMapping = item.PropertyDefaults.Select(p => new PropertyMapping
@@ -45,6 +46,38 @@ namespace DefinedContent.UI.Helpers
                         IsKey = p.ValueType == PropertyDefaultValueType.Key
                     })
                 }
+            };
+        }
+
+        public static DefinedContentItem ViewModelToCore(DefinedContentModel model)
+        {
+            ResolutionType resolveType;
+
+            switch (model.ResolveType)
+            {
+                case "xpath":
+                    resolveType = ResolutionType.XPath;
+                    break;
+                case "key":
+                    resolveType = ResolutionType.Key;
+                    break;
+                case "contentId":
+                    resolveType = ResolutionType.ContentId;
+                    break;
+            }
+
+            return new DefinedContentItem()
+            {
+                Key = model.Key,
+                Parent = model.ParentKey,
+                ResolveType = resolveType,
+                ResolveValue = model.ResolveValue,
+                ItemType = model.CreateConfig.Enabled 
+                    ? DefinedContentItemType.CreateAndResolve 
+                    : DefinedContentItemType.Resolve,
+                ContentTypeAlias = model.CreateConfig.ContentTypeAlias,
+                Name = model.CreateConfig.Name,
+                PropertyDefaults = model.CreateConfig.PropertyMapping.Select(p => new PropertyDefault {  PropertyAlias = p.Alias, Value = p.Value, ValueType = p.IsKey ? PropertyDefaultValueType.Key : PropertyDefaultValueType.StaticValue })
             };
         }
     }

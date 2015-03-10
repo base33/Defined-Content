@@ -9,11 +9,11 @@ namespace DefinedContent.Enums
 {
 	public enum ResolutionType : int
 	{
-		[XmlEnum]
+		[XmlEnum(Name="XPath")]
 		XPath = 1,
-		[XmlEnum]
+		[XmlEnum(Name="ContentId")]
 		ContentId = 2,
-		[XmlEnum]
+		[XmlEnum(Name="Key")]
 		Key = 3
 	}
 }

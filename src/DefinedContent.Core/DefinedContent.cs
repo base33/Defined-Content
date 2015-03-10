@@ -172,14 +172,15 @@ namespace DefinedContent
 			using (FileStream fs = System.IO.File.OpenRead(configFile.FullName))
 			{
 				DefinedContentItem item = (DefinedContentItem)serializer.Deserialize(fs);
+				item.FilePath = configFile.FullName;
 
 				if (parent == null)
 					this.ContentItems.Add(item);
 				else
 					parent.Children.Add(item);
 
-				var subDirs = configDirectory.GetDirectories();
 
+				var subDirs = configDirectory.GetDirectories();
 				foreach (var subDir in subDirs)
 				{
 					RecursivelyLoadDirectory(subDir, item);

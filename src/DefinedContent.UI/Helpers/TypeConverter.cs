@@ -70,14 +70,15 @@ namespace DefinedContent.UI.Helpers
             {
                 Key = model.Key,
                 Parent = model.ParentKey,
-                ResolveType = resolveType,
+                //ParentType = model.ParentKey != "" ? //TODO: needs to get parent xpath, contentid, or key in the editor
+                //ResolveType = resolveType,
                 ResolveValue = model.ResolveValue,
                 ItemType = model.CreateConfig.Enabled 
                     ? DefinedContentItemType.CreateAndResolve 
                     : DefinedContentItemType.Resolve,
                 ContentTypeAlias = model.CreateConfig.ContentTypeAlias,
                 Name = model.CreateConfig.Name,
-                PropertyDefaults = model.CreateConfig.PropertyMapping.Select(p => new PropertyDefault {  PropertyAlias = p.Alias, Value = p.Value, ValueType = p.IsKey ? PropertyDefaultValueType.Key : PropertyDefaultValueType.StaticValue })
+                //PropertyDefaults = model.CreateConfig.PropertyMapping.Select(p => new PropertyDefault() {  PropertyAlias = p.Alias, Value = p.Value, ValueType = p.IsKey ? PropertyDefaultValueType.Key : PropertyDefaultValueType.StaticValue })
             };
         }
     }

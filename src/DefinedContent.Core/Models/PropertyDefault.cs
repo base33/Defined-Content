@@ -14,7 +14,7 @@ namespace DefinedContent.Models
 		#region Properties
 
 		[XmlAttribute]
-		public string PropertyAlias { get; protected set; }
+		public string PropertyAlias { get; set; }
 
 		[XmlAttribute]
 		public PropertyDefaultValueType ValueType { get; set; }

@@ -78,7 +78,7 @@ namespace DefinedContent.UI.Helpers
                     : DefinedContentItemType.Resolve,
                 ContentTypeAlias = model.CreateConfig.ContentTypeAlias,
                 Name = model.CreateConfig.Name,
-                //PropertyDefaults = model.CreateConfig.PropertyMapping.Select(p => new PropertyDefault() {  PropertyAlias = p.Alias, Value = p.Value, ValueType = p.IsKey ? PropertyDefaultValueType.Key : PropertyDefaultValueType.StaticValue })
+                PropertyDefaults = model.CreateConfig.PropertyMapping.Select(p => new PropertyDefault() {  PropertyAlias = p.Alias, Value = p.Value, ValueType = p.IsKey ? PropertyDefaultValueType.Key : PropertyDefaultValueType.StaticValue })
             };
         }
     }

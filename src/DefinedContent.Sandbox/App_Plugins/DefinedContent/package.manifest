@@ -1,7 +1,5 @@
 ﻿{   
     javascript: [
-		"~/app_plugins/definedcontent/definedcontent.controllers.js",
-		"~/app_plugins/definedcontent/definedcontent.models.js",
-		"~/app_plugins/definedcontent/definedcontent.services.js"
+		"~/app_plugins/definedcontent/backoffice/definedcontent.controllers.js"
     ]
 }

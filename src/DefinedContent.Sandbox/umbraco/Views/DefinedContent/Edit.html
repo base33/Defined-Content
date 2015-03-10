@@ -1,87 +1,44 @@
-﻿<form name="dcForm"
-      ng-controller="DefinedContent.KeyEditController"
-      ng-submit="save(record)"
-      ng-show="loaded">
+﻿<form name="personForm"
+      ng-controller="People.PersonEditController"
+      ng-show="loaded"
+      ng-submit="save(person)"
+      val-form-manager>
     <umb-panel>
         <umb-header>
-            <h1>Create</h1>
+
+            <div class="span7">
+                <umb-content-name placeholder="@placeholders_entername"
+                                  ng-model="person.firstName" />
+            </div>
+
+            <div class="span5">
+                <div class="btn-toolbar pull-right umb-btn-toolbar">
+                    <umb-options-menu ng-show="currentNode"
+                                      current-node="currentNode"
+                                      current-section="{{currentSection}}">
+                    </umb-options-menu>
+                </div>
+            </div>
         </umb-header>
 
         <div class="umb-panel-body umb-scrollable row-fluid">
             <div class="tab-content form-horizontal" style="padding-bottom: 90px">
                 <div class="umb-pane">
 
-                    <umb-control-group label="Key" description="Name of the Defined Content key">
-                        <input type="text" class="umb-editor umb-textstring" ng-model="record.Key" required />
+
+
+                    <umb-control-group label="First name" description="Person's first name'">
+                        <input type="text" class="umb-editor umb-textstring" ng-model="person.firstName" required />
                     </umb-control-group>
 
-                    <umb-control-group label="Resolution" description="Specify resolution">
-                        <div style="min-height:40px;">
-                            <span>
-                                <input type="radio" value="contentId" ng-model="record.ResolveType" name="type" />Content Id
-                            </span>
-                            <div ng-show="record.ResolveType == 'contentId'">
-                                <input type="text" ng-model="record.ContentIdResolver" placeholder="Enter Content Id" />
-                            </div>
-                        </div>
-                        <div style="min-height:30px;">
-                            <span>
-                                <input type="radio" value="xpath" ng-model="record.ResolveType" name="type" /> XPath
-                            </span>
-                            <div ng-show="record.ResolveType == 'xpath'">
-                                <textarea ng-model="record.XPathResolver" placeholder="Enter XPath" style="min-width:66.6%;"></textarea>
-                            </div>
-                        </div>
-                        <div style="min-height:30px;">
-                            <span>
-                                <input type="radio" value="key" ng-model="record.ResolveType" name="type" /> Other Key
-                            </span>
-                            <div ng-show="record.ResolveType == 'key'">
-                                <input type="text" ng-model="record.KeyResolver" placeholder="Enter Key Name" />
-                            </div>
-                        </div>
+                    <umb-control-group label="Last name" description="Person's last name'">
+                        <input type="text" class="umb-editor umb-textstring" ng-model="person.lastName" required />
                     </umb-control-group>
 
-                    <umb-control-group label="Allow Content Creation?" description="This will allow Defined Content to create the item if it is missing.">
-                        <div>
-                            <input type="checkbox" class="" ng-model="record.CreateConfig.Enabled" /> Enable
-                        </div>
-                        <div ng-show="record.CreateConfig.Enabled" style="margin-top:15px;">
-                            Content Name: &nbsp;<input type="text" ng-model="record.CreateConfig.Name" />
-                        </div>
-                        <div ng-show="record.CreateConfig.Enabled" style="margin-top:15px;">
-                            Content Type Alias: &nbsp;<input type="text" ng-model="record.CreateConfig.ContentTypeAlias" />
-                        </div>
-                        <div ng-show="record.CreateConfig.Enabled" style="margin-top:15px;">
-                            Default Property Values:
-                            <ng-form>
-                                <table ng-show="record.CreateConfig.PropertyMapping.length > 0" style="width:586px;">
-                                    <tbody>
-                                        <tr ng-repeat="property in record.CreateConfig.PropertyMapping" ng-show="!$last" style="border-bottom:1px solid;border-color: #f1f1f1;height:35px;">
-                                            <td>{{property.Alias}}</td>
-                                            <td><i class="icon icon-key" ng-show="property.IsKey">&nbsp;</i>{{property.Value}}</td>
-                                            <td><a href ng-click="deleteProperty($index)">Delete</a></td>
-                                        </tr>
-                                        <tr style="border-top:1px solid gray;">
-                                            <td>
-                                                <input type="text" ng-model="record.CreateConfig.PropertyMapping[record.CreateConfig.PropertyMapping.length - 1].Alias" placeholder="Enter property alias" />
-                                            </td>
-                                            <td>
-                                                <input type="text" ng-model="record.CreateConfig.PropertyMapping[record.CreateConfig.PropertyMapping.length - 1].Value" placeholder="Enter value" />
-                                            </td>
-                                            <td>
-                                                <input type="checkbox" ng-model="record.CreateConfig.PropertyMapping[record.CreateConfig.PropertyMapping.length - 1].IsKey" /> Is Key?
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td rowspan="3">
-                                                <input type="button" ng-click="addProperty()" value="Add" />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </ng-form>
-                        </div>
+                    <umb-control-group label="Picture" description="Person's picture'">
+
+                        <umb-media-picker ng-model="person.pictureId" />
+
                     </umb-control-group>
 
                     <div class="umb-tab-buttons" detect-fold>

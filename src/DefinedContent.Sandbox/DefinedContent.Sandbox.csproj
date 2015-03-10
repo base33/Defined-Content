@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="..\packages\UmbracoCms.7.2.2\build\UmbracoCms.props" Condition="Exists('..\packages\UmbracoCms.7.2.2\build\UmbracoCms.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -22,7 +21,6 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <NuGetPackageImportStamp>da970091</NuGetPackageImportStamp>
-    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -208,10 +206,8 @@
   <ItemGroup>
     <Content Include="App_Plugins\Defined Content\Configs\Home\def.xml" />
     <Content Include="App_Plugins\Defined Content\Configs\Home\News\def.xml" />
-    <Content Include="App_Plugins\DefinedContent\package.manifest" />
     <Content Include="App_Plugins\dummy.txt" />
     <Content Include="packages.config" />
-    <Content Include="umbraco\Views\DefinedContent\Create.html" />
     <Content Include="umbraco\Views\DefinedContent\Delete.html" />
     <Content Include="umbraco\Views\DefinedContent\Edit.html" />
     <Content Include="Views\Web.config" />
@@ -268,6 +264,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\DefinedContent.Core\DefinedContent.Core.csproj">
       <Project>{cc84ae8d-b9a1-4f95-bd37-34ed9b581b4e}</Project>
@@ -278,28 +275,11 @@
       <Name>DefinedContent.UI</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="App_Plugins\DefinedContent\DefinedContent.Controllers.ts" />
-    <TypeScriptCompile Include="App_Plugins\DefinedContent\definedcontent.services.ts" />
-    <TypeScriptCompile Include="App_Plugins\DefinedContent\definedcontent.models.ts" />
-    <TypeScriptCompile Include="scripts\typings\angularjs\angular-animate.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\angularjs\angular-cookies.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\angularjs\angular-mocks.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\angularjs\angular-resource.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\angularjs\angular-route.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\angularjs\angular-sanitize.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\angularjs\angular.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\jquery\jquery.d.ts" />
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <TypeScriptModuleKind>amd</TypeScriptModuleKind>
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <ProjectExtensions>

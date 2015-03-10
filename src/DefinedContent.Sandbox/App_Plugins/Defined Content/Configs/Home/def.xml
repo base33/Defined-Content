@@ -1,9 +1,23 @@
-<definedContent>
+<!--<definedContent>
 	<contentItem key="site_home"
 				 resolveType="XPath"
 				 resolveValue="./root/*[1]"
 				 
 				 docTypeId="umbHomePage"
-				 name="Home" parent="-1"
+				 name="Home"
+				 parent="-1"
+				 parentType="ContentId" />
+</definedContent>-->
+
+
+
+<definedContent>
+	<contentItem key="forum"
+				 resolveType="XPath"
+				 resolveValue="$currentPage/ancestor-or-self/@[Level=1]"
+				 
+				 docTypeId="umbHomePage"
+				 name="Home"
+				 parent="./"
 				 parentType="ContentId" />
 </definedContent>

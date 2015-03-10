@@ -9,25 +9,14 @@ namespace DefinedContent.Models.Cache
 {
 	public class RelativeCacheItem : CacheItem
 	{
-		UmbracoHelper _umbraco;
-
-		public RelativeCacheItem(DefinedContentItem item, UmbracoHelper helper)
+		public RelativeCacheItem(DefinedContentItem item)
 			: base(item)
 		{
-			_umbraco = helper;	
 		}
 
 		public override int ResolveId(int? currentPageId = null)
 		{
-			currentPageId = currentPageId ?? UmbracoContext.Current.PageId;
-
-			if (!currentPageId.HasValue)
-				throw new Exception("Cannot resolve the current page in the current context. Please pass in the current page id in to your call to DefinedContent.Id - " + this.Key);
-
-			string xPath = this.DefinedContentItem.ResolveValue;
-			xPath = xPath.Replace("$currentPage", string.Format("//* ", currentPageId.Value));
-
-			return 1;
+			return XPathResolver.ResolveRelative(this.DefinedContentItem.ResolveValue, currentPageId);
 		}
 	}
 }

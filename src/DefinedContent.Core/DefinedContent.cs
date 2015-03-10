@@ -135,17 +135,20 @@ namespace DefinedContent
 			SetPropertyDefaults();
 		}
 
-		/// <summary>
-		/// Ensures duplicate 
-		/// </summary>
-		/// <param name="item"></param>
-		/// <param name="resolvedNodeId"></param>
-		public void AddToCache(DefinedContentItem item, int resolvedNodeId)
+		public void AddStaticItemToCache(DefinedContentItem item, int resolvedNodeId)
 		{
 			if (this.KeyToNodeIdCache.ContainsKey(item.Key))
 				throw new Exception("Duplicate key detected " + item.Key);
 
 			this.KeyToNodeIdCache.Add(item.Key, new StaticCacheItem(item, resolvedNodeId));
+		}
+
+		public void AddRelativeItemToCache(DefinedContentItem item)
+		{
+			if (this.KeyToNodeIdCache.ContainsKey(item.Key))
+				throw new Exception("Duplicate key detected " + item.Key);
+
+			this.KeyToNodeIdCache.Add(item.Key, new RelativeCacheItem(item));
 		}
 
 		#endregion
@@ -201,10 +204,7 @@ namespace DefinedContent
 			{
 				ResolveNodeId(contentItems[i]);
 
-				foreach (DefinedContentItem child in contentItems[i].Children)
-				{
-					ResolveNodeId(child);
-				}
+				BuildCache(contentItems[i].Children);
 			}
 
 			while (this.AwaitingResolution.Count > 0)
@@ -237,7 +237,7 @@ namespace DefinedContent
 			}
 
 			if (nodeId.HasValue)
-				AddToCache(item, nodeId.Value);
+				AddStaticItemToCache(item, nodeId.Value);
 		}
 
 		/// <summary>
@@ -287,12 +287,18 @@ namespace DefinedContent
 		/// <param name="item">Defined Content Item to match</param>
 		private int? ResolveItemByXPath(DefinedContentItem item)
 		{
-			var resolvedNode = _umbraco.TypedContentAtXPath(item.ResolveValue);
+			if (item.ResolveValue.Contains("$currentPage"))
+			{
+				AddRelativeItemToCache(item);
+				return null;
+			}
 
-			if (resolvedNode == null)
+			int? resolvedNode = XPathResolver.ResolveStatic(item.ResolveValue, false);
+
+			if (!resolvedNode.HasValue)
 				return CreateItem(item);
 			else
-				return resolvedNode.First().Id;
+				return resolvedNode.Value;
 		}
 
 		#endregion

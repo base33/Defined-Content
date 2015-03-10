@@ -37,5 +37,11 @@ namespace DefinedContent.WebApi
 		{
 			return DefinedContent.Current.GetDefinedContentItem(key);
 		}
+
+		[HttpGet]
+		public int TestRelativeXPath(string xPath, int currentPageId)
+		{
+			return XPathResolver.ResolveRelative(xPath, currentPageId);
+		}
 	}
 }

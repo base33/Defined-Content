@@ -197,6 +197,7 @@
     <Compile Include="Enums\PropertyDefaultValueType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebApi\DefinedContentApiController.cs" />
+    <Compile Include="XPathResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

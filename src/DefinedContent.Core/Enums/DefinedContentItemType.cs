@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DefinedContent.Enums
 {
-	public enum PropertyDefaultValueType : int
+	public enum DefinedContentItemType : int 
 	{
-		StaticValue = 1,
-		Key = 2
+		Resolve = 1,
+		CreateAndResolve = 2
 	}
 }

@@ -374,12 +374,12 @@ namespace DefinedContent
 
 		private int? ResolveParentByKey(DefinedContentItem item)
 		{
-			throw new NotImplementedException();
+			return TryGetId(item.Parent);
 		}
 
 		private int? ResolveParentByXPath(DefinedContentItem item)
 		{
-			throw new NotImplementedException();
+			return XPathResolver.ResolveStatic(item.Parent);
 		}
 
 		#region Set Property Defaults
@@ -388,13 +388,34 @@ namespace DefinedContent
 		{
 			foreach (DefinedContentItem item in this.CreatedItems)
 			{
-				SetPropertyDefaults(item);
+				IContent contentItem = _contentService.GetById(GetId(item.Key));
+
+				SetPropertyDefaults(item, contentItem);
+
+				_contentService.SaveAndPublishWithStatus(contentItem);
 			}
 		}
 
-		private void SetPropertyDefaults(DefinedContentItem item)
+		private void SetPropertyDefaults(DefinedContentItem item, IContent contentItem)
 		{
+			foreach (PropertyDefault property in item.PropertyDefaults)
+			{
+				string propertyValue = "";
 
+				switch (property.ValueType)
+				{
+					case PropertyDefaultValueType.Key:
+						propertyValue = GetId(property.Value).ToString();
+						break;
+					case PropertyDefaultValueType.StaticValue:
+						propertyValue = property.Value;
+						break;
+					default:
+						throw new Exception("Unknown property default value type for property " + property.PropertyAlias + " on key " + item.Key);
+				}
+
+				contentItem.SetValue(property.PropertyAlias, propertyValue);
+			}
 		}
 
 		#endregion

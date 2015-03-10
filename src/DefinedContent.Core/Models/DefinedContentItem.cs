@@ -39,7 +39,7 @@ namespace DefinedContent.Models
 		[XmlAttribute]
 		public string Parent { get; set; }
 
-		[XmlAttribute]
+		[XmlElement]
 		public ResolutionType? ParentType { get; set; }
 
 		[XmlElement]

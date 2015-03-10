@@ -186,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Enums\DefinedContentItemType.cs" />
     <Compile Include="Enums\ResolutionType.cs" />
     <Compile Include="Models\Cache\CacheItem.cs" />
     <Compile Include="Models\Cache\RelativeCacheItem.cs" />

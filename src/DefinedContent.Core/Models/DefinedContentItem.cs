@@ -20,11 +20,14 @@ namespace DefinedContent.Models
 		public string FilePath { get; set; }
 
 		//Create Information
+		public DefinedContentItemType ItemType { get; set; }
 		public string ContentTypeAlias { get; protected set; }
 		public string Name { get; protected set; }
 		public string Parent { get; protected set; }
 		public ResolutionType? ParentType { get; protected set; }
 		public List<PropertyDefault> PropertyDefaults { get; set; }
+
+		public List<DefinedContentItem> Children { get; set; }
 
 		#endregion
 
@@ -33,6 +36,8 @@ namespace DefinedContent.Models
 		public DefinedContentItem(string filePath)
 		{
 			this.FilePath = filePath;
+
+			this.Children = new List<DefinedContentItem>();
 
 			XElement xml = LoadXml(filePath);
 			LoadAttributes(xml);
@@ -54,7 +59,13 @@ namespace DefinedContent.Models
 		{
 			this.Key = xml.Attribute("key").Value;
 
-			ResolutionType? resolutionType = GetResolutionTypeFromAttribute(xml.Attribute("resolveType"));
+			DefinedContentItemType? itemType = GetEnumValueFromAttribute<DefinedContentItemType>(xml.Attribute("type"));
+			if (!itemType.HasValue)
+				throw new Exception("Invalid item type on key " + this.Key);
+
+			this.ItemType = itemType.Value;
+
+			ResolutionType? resolutionType = GetEnumValueFromAttribute<ResolutionType>(xml.Attribute("resolveType"));
 			if (!resolutionType.HasValue)
 				throw new Exception("Invalid resolution type on key + " + this.Key);
 
@@ -64,7 +75,7 @@ namespace DefinedContent.Models
 			this.ContentTypeAlias = GetAttributeValue(xml.Attribute("docTypeId"));
 			this.Name = GetAttributeValue(xml.Attribute("name"));
 			this.Parent = GetAttributeValue(xml.Attribute("parent"));
-			this.ParentType = GetResolutionTypeFromAttribute(xml.Attribute("parentType"));
+			this.ParentType = GetEnumValueFromAttribute<ResolutionType>(xml.Attribute("parentType"));
 		}
 
 		private string GetAttributeValue(XAttribute attribute)
@@ -75,14 +86,14 @@ namespace DefinedContent.Models
 			return "";
 		}
 
-		private ResolutionType? GetResolutionTypeFromAttribute(XAttribute attribute)
+		private T? GetEnumValueFromAttribute<T>(XAttribute attribute) where T : struct
 		{
 			if (attribute == null)
 				return null;
 
-			ResolutionType resolutionType;
+			T resolutionType;
 
-			if (Enum.TryParse<ResolutionType>(attribute.Value, out resolutionType))
+			if (Enum.TryParse<T>(attribute.Value, out resolutionType))
 				return resolutionType;
 
 			return null;

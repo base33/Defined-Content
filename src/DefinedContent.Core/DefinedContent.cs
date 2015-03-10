@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Umbraco.Web;
@@ -144,7 +145,7 @@ namespace DefinedContent
 			if (this.KeyToNodeIdCache.ContainsKey(item.Key))
 				throw new Exception("Duplicate key detected " + item.Key);
 
-			this.KeyToNodeIdCache.Add(item.Key, new StaticCacheItem(item,resolvedNodeId));
+			this.KeyToNodeIdCache.Add(item.Key, new StaticCacheItem(item, resolvedNodeId));
 		}
 
 		#endregion
@@ -163,20 +164,26 @@ namespace DefinedContent
 			RecursivelyLoadDirectory(configDirectory);
 		}
 
-		private void RecursivelyLoadDirectory(DirectoryInfo configDirectory)
+		private void RecursivelyLoadDirectory(DirectoryInfo configDirectory, DefinedContentItem parent = null)
 		{
-			var xmlFiles = configDirectory.GetFiles("*" + Constants.CONFIG_FILE_EXTENSION);
+			var configFile = new FileInfo(configDirectory + "\\" + Constants.CONFIG_FILE_NAME);
 
-			foreach (var xmlFile in xmlFiles)
+			XmlSerializer serializer = new XmlSerializer(typeof(DefinedContentItem));
+			using (FileStream fs = System.IO.File.OpenRead(configFile.FullName))
 			{
-				this.ContentItems.Add(new DefinedContentItem(xmlFile.FullName));
-			}
+				DefinedContentItem item = (DefinedContentItem)serializer.Deserialize(fs);
 
-			var subDirs = configDirectory.GetDirectories();
+				if (parent == null)
+					this.ContentItems.Add(item);
+				else
+					parent.Children.Add(item);
 
-			foreach (var subDir in subDirs)
-			{
-				RecursivelyLoadDirectory(subDir);
+				var subDirs = configDirectory.GetDirectories();
+
+				foreach (var subDir in subDirs)
+				{
+					RecursivelyLoadDirectory(subDir, item);
+				}
 			}
 		}
 
@@ -192,6 +199,11 @@ namespace DefinedContent
 			for (int i = 0; i < contentItems.Count; i++)
 			{
 				ResolveNodeId(contentItems[i]);
+
+				foreach (DefinedContentItem child in contentItems[i].Children)
+				{
+					ResolveNodeId(child);
+				}
 			}
 
 			while (this.AwaitingResolution.Count > 0)

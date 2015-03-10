@@ -15,7 +15,7 @@ namespace DefinedContent.Models
 
 		//Resolve Information
 		[XmlAttribute]
-		public string Key { get; protected set; }
+		public string Key { get; set; }
 
 		[XmlAttribute]
 		public ResolutionType ResolveType { get; set; }
@@ -31,16 +31,16 @@ namespace DefinedContent.Models
 		public DefinedContentItemType ItemType { get; set; }
 
 		[XmlAttribute]
-		public string ContentTypeAlias { get; protected set; }
+		public string ContentTypeAlias { get; set; }
 
 		[XmlAttribute]
-		public string Name { get; protected set; }
+		public string Name { get; set; }
 
 		[XmlAttribute]
-		public string Parent { get; protected set; }
+		public string Parent { get; set; }
 
 		[XmlAttribute]
-		public ResolutionType? ParentType { get; protected set; }
+		public ResolutionType? ParentType { get; set; }
 
 		[XmlElement]
 		public List<PropertyDefault> PropertyDefaults { get; set; }
@@ -50,6 +50,11 @@ namespace DefinedContent.Models
 		#endregion
 
 		#region Constructors
+
+		public DefinedContentItem()
+		{
+
+		}
 
 		public DefinedContentItem(string filePath)
 		{
@@ -64,75 +69,75 @@ namespace DefinedContent.Models
 
 		#endregion
 
-		#region Load from XML
+		//#region Load from XML
 
-		private XElement LoadXml(string filePath)
-		{
-			XElement xml = XElement.Load(filePath);
+		//private XElement LoadXml(string filePath)
+		//{
+		//	XElement xml = XElement.Load(filePath);
 
-			return xml.Descendants().First();
-		}
+		//	return xml.Descendants().First();
+		//}
 
-		private void LoadAttributes(XElement xml)
-		{
-			this.Key = xml.Attribute("key").Value;
+		//private void LoadAttributes(XElement xml)
+		//{
+		//	this.Key = xml.Attribute("key").Value;
 
-			DefinedContentItemType? itemType = GetEnumValueFromAttribute<DefinedContentItemType>(xml.Attribute("type"));
-			if (!itemType.HasValue)
-				throw new Exception("Invalid item type on key " + this.Key);
+		//	DefinedContentItemType? itemType = GetEnumValueFromAttribute<DefinedContentItemType>(xml.Attribute("type"));
+		//	if (!itemType.HasValue)
+		//		throw new Exception("Invalid item type on key " + this.Key);
 
-			this.ItemType = itemType.Value;
+		//	this.ItemType = itemType.Value;
 
-			ResolutionType? resolutionType = GetEnumValueFromAttribute<ResolutionType>(xml.Attribute("resolveType"));
-			if (!resolutionType.HasValue)
-				throw new Exception("Invalid resolution type on key + " + this.Key);
+		//	ResolutionType? resolutionType = GetEnumValueFromAttribute<ResolutionType>(xml.Attribute("resolveType"));
+		//	if (!resolutionType.HasValue)
+		//		throw new Exception("Invalid resolution type on key + " + this.Key);
 
-			this.ResolveType = resolutionType.Value;
-			this.ResolveValue = xml.Attribute("resolveValue").Value;
+		//	this.ResolveType = resolutionType.Value;
+		//	this.ResolveValue = xml.Attribute("resolveValue").Value;
 
-			this.ContentTypeAlias = GetAttributeValue(xml.Attribute("docTypeId"));
-			this.Name = GetAttributeValue(xml.Attribute("name"));
-			this.Parent = GetAttributeValue(xml.Attribute("parent"));
-			this.ParentType = GetEnumValueFromAttribute<ResolutionType>(xml.Attribute("parentType"));
-		}
+		//	this.ContentTypeAlias = GetAttributeValue(xml.Attribute("docTypeId"));
+		//	this.Name = GetAttributeValue(xml.Attribute("name"));
+		//	this.Parent = GetAttributeValue(xml.Attribute("parent"));
+		//	this.ParentType = GetEnumValueFromAttribute<ResolutionType>(xml.Attribute("parentType"));
+		//}
 
-		private string GetAttributeValue(XAttribute attribute)
-		{
-			if (attribute != null)
-				return attribute.Value;
+		//private string GetAttributeValue(XAttribute attribute)
+		//{
+		//	if (attribute != null)
+		//		return attribute.Value;
 
-			return "";
-		}
+		//	return "";
+		//}
 
-		private T? GetEnumValueFromAttribute<T>(XAttribute attribute) where T : struct
-		{
-			if (attribute == null)
-				return null;
+		//private T? GetEnumValueFromAttribute<T>(XAttribute attribute) where T : struct
+		//{
+		//	if (attribute == null)
+		//		return null;
 
-			T resolutionType;
+		//	T resolutionType;
 
-			if (Enum.TryParse<T>(attribute.Value, out resolutionType))
-				return resolutionType;
+		//	if (Enum.TryParse<T>(attribute.Value, out resolutionType))
+		//		return resolutionType;
 
-			return null;
-		}
+		//	return null;
+		//}
 
-		private void LoadPropertyDefaults(XElement xml)
-		{
-			this.PropertyDefaults = new List<PropertyDefault>();
+		//private void LoadPropertyDefaults(XElement xml)
+		//{
+		//	this.PropertyDefaults = new List<PropertyDefault>();
 
-			XElement propertyDefaultsXml = xml.Descendants("propertyDefaults").FirstOrDefault();
+		//	XElement propertyDefaultsXml = xml.Descendants("propertyDefaults").FirstOrDefault();
 
-			if (propertyDefaultsXml != null)
-			{
-				foreach (XElement propertyDefaultXml in propertyDefaultsXml.Descendants())
-				{
-					this.PropertyDefaults.Add(new PropertyDefault(propertyDefaultXml));
-				}
-			}
-		}
+		//	if (propertyDefaultsXml != null)
+		//	{
+		//		foreach (XElement propertyDefaultXml in propertyDefaultsXml.Descendants())
+		//		{
+		//			this.PropertyDefaults.Add(new PropertyDefault(propertyDefaultXml));
+		//		}
+		//	}
+		//}
 
-		#endregion
+		//#endregion
 
 		#region Public Methods
 

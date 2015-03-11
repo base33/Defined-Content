@@ -13,26 +13,13 @@ namespace DefinedContent.UI.Helpers
     {
         public static DefinedContentModel CoreItemToViewModel(DefinedContentItem item)
         {
-            string resolveType = "";
-            switch(item.ResolveType)
-            {
-                case ResolutionType.XPath:
-                    resolveType = "xpath";
-                    break;
-                case ResolutionType.Key:
-                    resolveType = "key";
-                    break;
-                case ResolutionType.ContentId:
-                    resolveType = "contentId";
-                    break;
-            }
-
             return new DefinedContentModel()
             {
                 Key = item.Key,
-                ResolveType = resolveType,
+                ResolveType = GetViewResolveType(item.ResolveType),
                 ResolveValue = item.ResolveValue,
                 ParentKey = item.Parent,
+                ParentResolveType = GetViewResolveType(item.ParentType.Value),
                 DefinedContentParent = item.Parent == "" ? "-1" : item.Parent,
 
                 CreateConfig = new CreateModel()
@@ -50,32 +37,28 @@ namespace DefinedContent.UI.Helpers
             };
         }
 
+        private static string GetViewResolveType(ResolutionType type)
+        {
+            switch (type)
+            {
+                case ResolutionType.XPath:
+                    return "xpath";
+                case ResolutionType.Key:
+                    return "key";
+                case ResolutionType.ContentId:
+                    return "contentId";
+            }
+            return "key";
+        }
+
         public static DefinedContentItem ViewModelToCore(DefinedContentModel model)
         {
-            ResolutionType resolveType;
-
-            switch (model.ResolveType)
-            {
-                case "xpath":
-                    resolveType = ResolutionType.XPath;
-                    break;
-                case "key":
-                    resolveType = ResolutionType.Key;
-                    break;
-                case "contentId":
-                    resolveType = ResolutionType.ContentId;
-                    break;
-                default:
-                    resolveType = ResolutionType.Key;
-                    break;
-            }
-
             return new DefinedContentItem()
             {
                 Key = model.Key,
                 Parent = model.ParentKey,
-                ParentType = ResolutionType.Key, //TODO: needs to get parent xpath, contentid, or key in the editor
-                ResolveType = resolveType,
+                ParentType = GetCoreResolutionType(model.ParentResolveType), //TODO: needs to get parent xpath, contentid, or key in the editor
+                ResolveType = GetCoreResolutionType(model.ResolveType),
                 ResolveValue = model.ResolveValue,
                 ItemType = model.CreateConfig.Enabled 
                     ? DefinedContentItemType.CreateAndResolve 
@@ -84,6 +67,21 @@ namespace DefinedContent.UI.Helpers
                 Name = model.CreateConfig.Name,
                 PropertyDefaults = model.CreateConfig.PropertyMapping.Select(p => new PropertyDefault() {  PropertyAlias = p.Alias, Value = p.Value, ValueType = p.IsKey ? PropertyDefaultValueType.Key : PropertyDefaultValueType.StaticValue }).ToList()
             };
+        }
+
+        private static ResolutionType GetCoreResolutionType(string type)
+        {
+            switch (type)
+            {
+                case "xpath":
+                    return ResolutionType.XPath;
+                case "key":
+                    return ResolutionType.Key;
+                case "contentId":
+                    return ResolutionType.ContentId;
+                default:
+                    return ResolutionType.Key;
+            }
         }
     }
 }

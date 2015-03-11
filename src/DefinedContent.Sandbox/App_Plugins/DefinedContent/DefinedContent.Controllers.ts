@@ -2,18 +2,49 @@
     function ($scope, notificationsService, navigationService, $location: ng.ILocationService, $routeParams, definedContentWebApi: DefinedContent.WebApi) {
         $scope.record = new DefinedContent.DefinedContentViewModel();
         var currentRecord = <DefinedContent.DefinedContentViewModel>$scope.record;
-        
-        $scope.save = function (record : DefinedContent.DefinedContentViewModel) {
+        $scope.isRoot = $routeParams.id == -1;
+        $scope.save = function (record: DefinedContent.DefinedContentViewModel) {
             var apiModel = DefinedContent.TypeConverter.ViewModelToApiModel(record);
+
+            //switch (record.ResolveType) {
+            //    case "xpath":
+            //        apiModel.ResolveValue = record.XPathResolver;
+            //        break;
+            //    case "key":
+            //        apiModel.ResolveValue = record.KeyResolver;
+            //        break;
+            //    case "contentId":
+            //        apiModel.ResolveValue = record.ContentIdResolver;
+            //        break;
+            //}
+
+            //if ($scope.isRoot) {
+            //    switch (record.ParentResolveType) {
+            //        case "xpath":
+            //            apiModel.ParentKey = record.ParentXPathResolver;
+            //            break;
+            //        case "key":
+            //            apiModel.ParentKey = record.ParentKeyResolver;
+            //            break;
+            //        case "contentId":
+            //            apiModel.ParentKey = record.ParentContentIdResolver;
+            //            break;
+            //    }
+            //}
+
             definedContentWebApi.Save(apiModel)
-            .success((result) => {
+                .success((result) => {
                 notificationsService.success("Saved");
                 $location.path("/settings/definedContent/edit/" + record.Key);
             })
-            .error((result) => {
+                .error((result) => {
                 notificationsService.error("Unable to save.  See log");
             });
         }
+
+        $scope.createEnabledStyle = function () {
+            return $scope.record.CreateConfig.Enabled ? {} : { "background": "rgb(208, 208, 208)", "opacity" : "0.6" };
+        };
 
         $scope.addProperty = function () {
             var property = <DefinedContent.PropertyMap>currentRecord.CreateConfig.PropertyMapping[currentRecord.CreateConfig.PropertyMapping.length - 1];
@@ -51,6 +82,10 @@
             //add a blank property for the user to fill
             currentRecord.CreateConfig.PropertyMapping.push(new DefinedContent.PropertyMap());
             currentRecord.ResolveType = "contentId";
+            currentRecord.ParentResolveType = "key";
+            if ($routeParams.id != "-1") {
+                currentRecord.ParentKey = $routeParams.id;
+            }
             currentRecord.DefinedContentParent = $routeParams.id;
         }
 
@@ -65,6 +100,17 @@ angular.module("umbraco").controller("DefinedContent.KeyEditController",
 
         $scope.save = function (record: DefinedContent.DefinedContentViewModel) {
             var apiModel = DefinedContent.TypeConverter.ViewModelToApiModel(record);
+            //switch (record.ResolveType) {
+            //    case "xpath":
+            //        apiModel.ResolveValue = record.XPathResolver;
+            //        break;
+            //    case "key":
+            //        apiModel.ResolveValue = record.KeyResolver;
+            //        break;
+            //    case "contentId":
+            //        apiModel.ResolveValue = record.ContentIdResolver;
+            //        break;
+            //}
             definedContentWebApi.Save(apiModel)
                 .success((result) => {
                 notificationsService.success("Saved");
@@ -104,6 +150,10 @@ angular.module("umbraco").controller("DefinedContent.KeyEditController",
 
         $scope.deleteProperty = function (index) {
             currentRecord.CreateConfig.PropertyMapping.splice(index, 1);
+        };
+
+        $scope.createEnabledStyle = function () {
+            return $scope.record.CreateConfig.Enabled ? {} : { "background": "rgb(208, 208, 208)", "opacity": "0.6" };
         };
 
         function init() {

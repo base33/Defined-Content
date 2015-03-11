@@ -10,6 +10,7 @@ var DefinedContent;
         function DefinedContentApiModel() {
             this.Key = "";
             this.ParentKey = "";
+            this.ParentResolveType = "";
             this.ResolveType = "";
             this.ResolveValue = "";
             this.DefinedContentParent = "";
@@ -44,6 +45,9 @@ var DefinedContent;
             this.XPathResolver = "";
             this.ContentIdResolver = "";
             this.KeyResolver = "";
+            this.ParentXPathResolver = "";
+            this.ParentContentIdResolver = "";
+            this.ParentKeyResolver = "";
         }
         return DefinedContentViewModel;
     })(DefinedContentApiModel);
@@ -55,10 +59,11 @@ var DefinedContent;
             var model = new DefinedContentApiModel();
             model.Key = viewModel.Key;
             model.ParentKey = viewModel.ParentKey;
+            model.ParentResolveType = viewModel.ParentResolveType;
             model.CreateConfig = viewModel.CreateConfig;
             model.ResolveType = viewModel.ResolveType;
             model.DefinedContentParent = viewModel.DefinedContentParent;
-            switch (model.ResolveType) {
+            switch (viewModel.ResolveType) {
                 case "xpath":
                     model.ResolveValue = viewModel.XPathResolver;
                     break;
@@ -67,6 +72,17 @@ var DefinedContent;
                     break;
                 case "key":
                     model.ResolveValue = viewModel.KeyResolver;
+                    break;
+            }
+            switch (viewModel.ParentResolveType) {
+                case "xpath":
+                    model.ParentKey = viewModel.ParentXPathResolver;
+                    break;
+                case "contentId":
+                    model.ParentKey = viewModel.ParentContentIdResolver;
+                    break;
+                case "key":
+                    model.ParentKey = viewModel.ParentKeyResolver;
                     break;
             }
             return model;
@@ -78,7 +94,7 @@ var DefinedContent;
             model.CreateConfig = apiModel.CreateConfig;
             model.ResolveType = apiModel.ResolveType;
             model.DefinedContentParent = apiModel.DefinedContentParent;
-            switch (model.ResolveType) {
+            switch (apiModel.ResolveType) {
                 case "xpath":
                     model.XPathResolver = apiModel.ResolveValue;
                     break;
@@ -87,6 +103,17 @@ var DefinedContent;
                     break;
                 case "key":
                     model.KeyResolver = apiModel.ResolveValue;
+                    break;
+            }
+            switch (apiModel.ParentResolveType) {
+                case "xpath":
+                    model.ParentXPathResolver = apiModel.ParentKey;
+                    break;
+                case "contentId":
+                    model.ParentContentIdResolver = apiModel.ParentKey;
+                    break;
+                case "key":
+                    model.ParentKeyResolver = apiModel.ParentKey;
                     break;
             }
             return model;

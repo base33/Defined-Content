@@ -17,5 +17,6 @@ namespace DefinedContent.UI.Models
         public CreateModel CreateConfig { get; set; }
 
         public string ParentKey { get; set; }
+        public string ParentResolveType { get; set; }
     }
 }

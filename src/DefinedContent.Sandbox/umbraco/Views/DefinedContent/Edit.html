@@ -6,11 +6,9 @@
         <umb-header>
             <h1>Edit {{record.Key}}</h1>
         </umb-header>
-
         <div class="umb-panel-body umb-scrollable row-fluid">
             <div class="tab-content form-horizontal" style="padding-bottom: 90px">
                 <div class="umb-pane">
-
                     <umb-control-group label="Resolution" description="Specify resolution">
                         <div style="min-height:40px;">
                             <span>
@@ -37,19 +35,58 @@
                             </div>
                         </div>
                     </umb-control-group>
+                    <br />
+                    <hr />
+
+                    <h8 style="font-size: 13pt;">Creation:</h8>
+                    <br />
 
                     <umb-control-group label="Allow Content Creation?" description="This will allow Defined Content to create the item if it is missing.">
                         <div>
-                            <input type="checkbox" class="" ng-model="record.CreateConfig.Enabled" /> Enable
+                            <input type="checkbox" class="" ng-model="record.CreateConfig.Enabled" id="createConfigEnabled" /> <label for="createConfigEnabled">enable</label>
                         </div>
-                        <div ng-show="record.CreateConfig.Enabled" style="margin-top:15px;">
-                            Content Name: &nbsp;<input type="text" ng-model="record.CreateConfig.Name" />
-                        </div>
-                        <div ng-show="record.CreateConfig.Enabled" style="margin-top:15px;">
-                            Content Type Alias: &nbsp;<input type="text" ng-model="record.CreateConfig.ContentTypeAlias" />
-                        </div>
-                        <div ng-show="record.CreateConfig.Enabled" style="margin-top:15px;">
-                            Default Property Values:
+                    </umb-control-group>
+
+                    <div ng-style="createEnabledStyle()">
+                        <umb-control-group label="Select parent to create under:" description="This will allow Defined Content to create the item if it is missing.">
+                            <div style="min-height:40px;">
+                                This will be created under {{record.ParentKey}}
+                            </div>
+                            <div style="min-height:40px;" ng-show="isRoot">
+                                <span>
+                                    <input type="radio" value="contentId" ng-model="record.ParentResolveType" name="type" />Content Id
+                                </span>
+                                <div ng-show="record.ParentResolveType == 'contentId'">
+                                    <input type="text" ng-model="record.ParentContentIdResolver" placeholder="Enter Content Id" />
+                                </div>
+                            </div>
+                            <div style="min-height:30px;" ng-show="isRoot">
+                                <span>
+                                    <input type="radio" value="xpath" ng-model="record.ParentResolveType" name="type" /> XPath
+                                </span>
+                                <div ng-show="record.ParentResolveType == 'xpath'">
+                                    <textarea ng-model="record.ParentXPathResolver" placeholder="Enter XPath" style="min-width:66.6%;"></textarea>
+                                </div>
+                            </div>
+                            <div style="min-height:30px;" ng-show="isRoot">
+                                <span>
+                                    <input type="radio" value="key" ng-model="record.ParentResolveType" name="type" /> Other Key
+                                </span>
+                                <div ng-show="record.ParentResolveType == 'key'">
+                                    <input type="text" ng-model="record.ParentKeyResolver" placeholder="Enter Key Name" />
+                                </div>
+                            </div>
+                        </umb-control-group>
+                        <umb-control-group label="Content Name" description="">
+                            <input type="text" ng-model="record.CreateConfig.Name" />
+
+                        </umb-control-group>
+                        <umb-control-group label="Content Type Alias" description="">
+                            <input type="text" ng-model="record.CreateConfig.ContentTypeAlias" />
+
+
+                        </umb-control-group>
+                        <umb-control-group label="Default Property Values" description="">
                             <ng-form>
                                 <table ng-show="record.CreateConfig.PropertyMapping.length > 0" style="width:586px;">
                                     <tbody>
@@ -77,9 +114,8 @@
                                     </tbody>
                                 </table>
                             </ng-form>
-                        </div>
-                    </umb-control-group>
-
+                        </umb-control-group>
+                    </div>
                     <div class="umb-tab-buttons" detect-fold>
                         <div class="btn-group">
                             <button type="submit" data-hotkey="ctrl+s" class="btn btn-success">
@@ -87,11 +123,9 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-
     </umb-panel>
 </form>
 

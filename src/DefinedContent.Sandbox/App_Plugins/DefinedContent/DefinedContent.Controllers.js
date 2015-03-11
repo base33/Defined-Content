@@ -1,14 +1,42 @@
 angular.module("umbraco").controller("DefinedContent.KeyCreateController", function ($scope, notificationsService, navigationService, $location, $routeParams, definedContentWebApi) {
     $scope.record = new DefinedContent.DefinedContentViewModel();
     var currentRecord = $scope.record;
+    $scope.isRoot = $routeParams.id == -1;
     $scope.save = function (record) {
         var apiModel = DefinedContent.TypeConverter.ViewModelToApiModel(record);
+        //switch (record.ResolveType) {
+        //    case "xpath":
+        //        apiModel.ResolveValue = record.XPathResolver;
+        //        break;
+        //    case "key":
+        //        apiModel.ResolveValue = record.KeyResolver;
+        //        break;
+        //    case "contentId":
+        //        apiModel.ResolveValue = record.ContentIdResolver;
+        //        break;
+        //}
+        //if ($scope.isRoot) {
+        //    switch (record.ParentResolveType) {
+        //        case "xpath":
+        //            apiModel.ParentKey = record.ParentXPathResolver;
+        //            break;
+        //        case "key":
+        //            apiModel.ParentKey = record.ParentKeyResolver;
+        //            break;
+        //        case "contentId":
+        //            apiModel.ParentKey = record.ParentContentIdResolver;
+        //            break;
+        //    }
+        //}
         definedContentWebApi.Save(apiModel).success(function (result) {
             notificationsService.success("Saved");
             $location.path("/settings/definedContent/edit/" + record.Key);
         }).error(function (result) {
             notificationsService.error("Unable to save.  See log");
         });
+    };
+    $scope.createEnabledStyle = function () {
+        return $scope.record.CreateConfig.Enabled ? {} : { "background": "rgb(208, 208, 208)", "opacity": "0.6" };
     };
     $scope.addProperty = function () {
         var property = currentRecord.CreateConfig.PropertyMapping[currentRecord.CreateConfig.PropertyMapping.length - 1];
@@ -38,6 +66,10 @@ angular.module("umbraco").controller("DefinedContent.KeyCreateController", funct
         //add a blank property for the user to fill
         currentRecord.CreateConfig.PropertyMapping.push(new DefinedContent.PropertyMap());
         currentRecord.ResolveType = "contentId";
+        currentRecord.ParentResolveType = "key";
+        if ($routeParams.id != "-1") {
+            currentRecord.ParentKey = $routeParams.id;
+        }
         currentRecord.DefinedContentParent = $routeParams.id;
     }
     init();
@@ -48,6 +80,17 @@ angular.module("umbraco").controller("DefinedContent.KeyEditController", functio
     var currentRecord = null;
     $scope.save = function (record) {
         var apiModel = DefinedContent.TypeConverter.ViewModelToApiModel(record);
+        //switch (record.ResolveType) {
+        //    case "xpath":
+        //        apiModel.ResolveValue = record.XPathResolver;
+        //        break;
+        //    case "key":
+        //        apiModel.ResolveValue = record.KeyResolver;
+        //        break;
+        //    case "contentId":
+        //        apiModel.ResolveValue = record.ContentIdResolver;
+        //        break;
+        //}
         definedContentWebApi.Save(apiModel).success(function (result) {
             notificationsService.success("Saved");
         }).error(function (result) {
@@ -77,6 +120,9 @@ angular.module("umbraco").controller("DefinedContent.KeyEditController", functio
     };
     $scope.deleteProperty = function (index) {
         currentRecord.CreateConfig.PropertyMapping.splice(index, 1);
+    };
+    $scope.createEnabledStyle = function () {
+        return $scope.record.CreateConfig.Enabled ? {} : { "background": "rgb(208, 208, 208)", "opacity": "0.6" };
     };
     function init() {
         definedContentWebApi.GetByKey($routeParams.id).success(function (result) {

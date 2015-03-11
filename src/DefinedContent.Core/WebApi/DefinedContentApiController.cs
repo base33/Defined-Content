@@ -39,6 +39,12 @@ namespace DefinedContent.WebApi
 		}
 
 		[HttpGet]
+		public int TestStaticXPath(string xPath)
+		{
+			return XPathResolver.ResolveStatic(xPath).Value;
+		}
+
+		[HttpGet]
 		public int TestRelativeXPath(string xPath, int currentPageId)
 		{
 			return XPathResolver.ResolveRelative(xPath, currentPageId);

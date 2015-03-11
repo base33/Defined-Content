@@ -250,6 +250,7 @@
     <Content Include="Views\umbNewsItem.cshtml" />
     <Content Include="Views\umbNewsOverview.cshtml" />
     <Content Include="Views\umbTextPage.cshtml" />
+    <Content Include="App_Data\umbraco.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

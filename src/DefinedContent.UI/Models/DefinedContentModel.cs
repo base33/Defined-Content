@@ -12,6 +12,8 @@ namespace DefinedContent.UI.Models
         public string ResolveType { get; set; }
         public string ResolveValue { get; set; }
 
+        public string DefinedContentParent { get; set; } //the physical parent - where to save
+
         public CreateModel CreateConfig { get; set; }
 
         public string ParentKey { get; set; }

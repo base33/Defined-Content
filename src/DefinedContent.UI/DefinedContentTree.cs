@@ -18,25 +18,30 @@ namespace DefinedContent.UI
         protected override TreeNodeCollection GetTreeNodes(string id, FormDataCollection queryStrings)
         {
             // check if we're rendering the root node's children
-            if (id == RealUmbraco.Core.Constants.System.Root.ToInvariantString())
-            {
-                // empty tree
-                var tree = new TreeNodeCollection()
-                {
-                    CreateTreeNode("Bobs Something", id, new FormDataCollection("somequerystring=2"), "Bob's News Root", "icon-anchor")
-                };
+            var items = id == RealUmbraco.Core.Constants.System.Root.ToInvariantString()
+                ? DefinedContent.Current.GetRootDefinedContentItems()
+                : DefinedContent.Current.GetDefinedContentItem(id).Children;
+            
+            // empty tree
+            //var tree = new TreeNodeCollection()
+            //{
+            //    CreateTreeNode("Bobs Something", id, new FormDataCollection("somequerystring=2"), "Bob's News Root", "icon-anchor")
+            //};
 
-                // but if we wanted to add nodes - 
-                /*  var tree = new TreeNodeCollection
-                {
-                    CreateTreeNode("1", id, queryStrings, "My Node 1"), 
-                    CreateTreeNode("2", id, queryStrings, "My Node 2"), 
-                    CreateTreeNode("3", id, queryStrings, "My Node 3")
-                };*/
-                return tree;
+            var tree = new TreeNodeCollection();
+            foreach (var item in items)
+            {
+                tree.Add(CreateTreeNode(item.Key, item.Key, null, item.Key, "icon-anchor", item.Children.Any()));
             }
-            // this tree doesn't support rendering more than 1 level
-            throw new NotSupportedException();
+
+            // but if we wanted to add nodes - 
+            /*  var tree = new TreeNodeCollection
+            {
+                CreateTreeNode("1", id, queryStrings, "My Node 1"), 
+                CreateTreeNode("2", id, queryStrings, "My Node 2"), 
+                CreateTreeNode("3", id, queryStrings, "My Node 3")
+            };*/
+            return tree;
         }
 
         protected override MenuItemCollection GetMenuForNode(string id, FormDataCollection queryStrings)
@@ -48,6 +53,7 @@ namespace DefinedContent.UI
             var m = new MenuItem("create", "Create");
             m.Icon = "add";
             m.NavigateToRoute("/settings/definedContent/create/" + id);
+            m.AdditionalData.Add("DefinedContentParent", id == "-1" ? "" : id);
             menu.Items.Add(m);
 
             if (id != "-1")

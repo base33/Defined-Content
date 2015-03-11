@@ -12,6 +12,7 @@ var DefinedContent;
             this.ParentKey = "";
             this.ResolveType = "";
             this.ResolveValue = "";
+            this.DefinedContentParent = "";
             this.CreateConfig = new CreateConfiguration();
         }
         return DefinedContentApiModel;
@@ -56,6 +57,7 @@ var DefinedContent;
             model.ParentKey = viewModel.ParentKey;
             model.CreateConfig = viewModel.CreateConfig;
             model.ResolveType = viewModel.ResolveType;
+            model.DefinedContentParent = viewModel.DefinedContentParent;
             switch (model.ResolveType) {
                 case "xpath":
                     model.ResolveValue = viewModel.XPathResolver;
@@ -75,6 +77,7 @@ var DefinedContent;
             model.ParentKey = apiModel.ParentKey;
             model.CreateConfig = apiModel.CreateConfig;
             model.ResolveType = apiModel.ResolveType;
+            model.DefinedContentParent = apiModel.DefinedContentParent;
             switch (model.ResolveType) {
                 case "xpath":
                     model.XPathResolver = apiModel.ResolveValue;

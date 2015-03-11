@@ -38,6 +38,7 @@ angular.module("umbraco").controller("DefinedContent.KeyCreateController", funct
         //add a blank property for the user to fill
         currentRecord.CreateConfig.PropertyMapping.push(new DefinedContent.PropertyMap());
         currentRecord.ResolveType = "contentId";
+        currentRecord.DefinedContentParent = $routeParams.id;
     }
     init();
 });

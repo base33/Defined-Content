@@ -5,6 +5,7 @@
         public ParentKey: string = "";
         public ResolveType: string = "";
         public ResolveValue: string = "";
+        public DefinedContentParent: string = "";
 
         public CreateConfig: CreateConfiguration = new CreateConfiguration();
     }
@@ -26,8 +27,6 @@
         public XPathResolver: string = "";
         public ContentIdResolver: string = "";
         public KeyResolver: string = "";
-
-        
     }
 
     export class TypeConverter {
@@ -37,6 +36,7 @@
             model.ParentKey = viewModel.ParentKey;
             model.CreateConfig = viewModel.CreateConfig;
             model.ResolveType = viewModel.ResolveType;
+            model.DefinedContentParent = viewModel.DefinedContentParent;
             switch (model.ResolveType) {
                 case "xpath":
                     model.ResolveValue = viewModel.XPathResolver;
@@ -57,6 +57,7 @@
             model.ParentKey = apiModel.ParentKey;
             model.CreateConfig = apiModel.CreateConfig;
             model.ResolveType = apiModel.ResolveType;
+            model.DefinedContentParent = apiModel.DefinedContentParent;
             switch (model.ResolveType) {
                 case "xpath":
                     model.XPathResolver = apiModel.ResolveValue;

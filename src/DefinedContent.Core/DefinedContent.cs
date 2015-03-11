@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Umbraco.Core.Models;
@@ -100,7 +101,10 @@ namespace DefinedContent
 
 		public DefinedContentItem GetDefinedContentItem(string key)
 		{
-			var item = (from ci in this.ContentItems
+            var contentItemsFlat = new List<DefinedContentItem>();
+            PopulateList(contentItemsFlat, this.ContentItems.First());
+
+            var item = (from ci in contentItemsFlat
 						where ci.Key == key
 						select ci).FirstOrDefault();
 
@@ -108,7 +112,18 @@ namespace DefinedContent
 				throw new Exception("Unknown key " + key);
 
 			return item;
-		}
+        }
+
+        void PopulateList(List<DefinedContentItem> source, DefinedContentItem current)
+        {
+            source.Add(current);
+
+            foreach (var item in current.Children)
+            {
+                source.Add(item);
+                PopulateList(source, item);
+            }
+        }
 
 		public IPublishedContent GetTypedContent(string key)
 		{
@@ -116,6 +131,15 @@ namespace DefinedContent
 
 			return _umbraco.TypedContent(id);
 		}
+
+        /// <summary>
+        /// Returns all defined content items that have no parents
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<DefinedContentItem> GetRootDefinedContentItems()
+        {
+            return ContentItems.First(c => c.Key == "DefinedContentRoot").Children;
+        }
 
 		/// <summary>
 		/// Reloads XML configs, ensures all content exists and rebuilds the defined content cache
@@ -157,7 +181,7 @@ namespace DefinedContent
 		/// </summary>
 		protected void LoadXmlConfigs()
 		{
-			string xmlConfigDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + Constants.CONFIG_DIRECTORY;
+			string xmlConfigDirectoryPath = HttpContext.Current.Server.MapPath("~/") + Constants.CONFIG_DIRECTORY;
 
 			DirectoryInfo configDirectory = new DirectoryInfo(xmlConfigDirectoryPath);
 
@@ -166,7 +190,7 @@ namespace DefinedContent
 
 		private void RecursivelyLoadDirectory(DirectoryInfo configDirectory, DefinedContentItem parent = null)
 		{
-			var configFile = new FileInfo(configDirectory + "\\" + Constants.CONFIG_FILE_NAME);
+			var configFile = new FileInfo(configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME);
 
 			XmlSerializer serializer = new XmlSerializer(typeof(DefinedContentItem));
 			using (FileStream fs = System.IO.File.OpenRead(configFile.FullName))
@@ -219,6 +243,8 @@ namespace DefinedContent
 		/// <param name="item">Defined Content Item to match</param>
 		private void ResolveNodeId(DefinedContentItem item)
 		{
+            if (item.Key == "DefinedContentRoot") return;
+
 			int? nodeId = null;
 
 			switch (item.ResolveType)

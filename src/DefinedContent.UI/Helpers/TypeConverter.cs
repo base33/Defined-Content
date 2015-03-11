@@ -33,6 +33,7 @@ namespace DefinedContent.UI.Helpers
                 ResolveType = resolveType,
                 ResolveValue = item.ResolveValue,
                 ParentKey = item.Parent,
+                DefinedContentParent = item.Parent == "" ? "-1" : item.Parent,
 
                 CreateConfig = new CreateModel()
                 {

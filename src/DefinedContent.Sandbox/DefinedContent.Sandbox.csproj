@@ -267,7 +267,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Plugins\Defined Content\Configs\" />
+    <Folder Include="App_Plugins\DefinedContent\Configs\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DefinedContent.Core\DefinedContent.Core.csproj">

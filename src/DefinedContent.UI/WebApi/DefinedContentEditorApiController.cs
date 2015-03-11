@@ -34,7 +34,7 @@ namespace DefinedContent.UI.WebApi
             //if its not empty, it means this was not created at the root
             if (model.DefinedContentParent != "-1")
             {
-                var parent = DefinedContent.Current.GetDefinedContentItem(item.Parent);
+                var parent = DefinedContent.Current.GetDefinedContentItem(model.DefinedContentParent);
                 filePath = Path.GetDirectoryName(parent.FilePath);
             }
 
@@ -47,7 +47,11 @@ namespace DefinedContent.UI.WebApi
 
             File.WriteAllText(filePath, xml);
 
-            DefinedContent.Current.FullRefresh();
+            try
+            {
+                DefinedContent.Current.FullRefresh();
+            }
+            catch (Exception) { }
         }
 
         [HttpDelete]

@@ -4,16 +4,12 @@
       ng-show="loaded">
     <umb-panel>
         <umb-header>
-            <h1>Create</h1>
+            <h1>Edit {{record.Key}}</h1>
         </umb-header>
 
         <div class="umb-panel-body umb-scrollable row-fluid">
             <div class="tab-content form-horizontal" style="padding-bottom: 90px">
                 <div class="umb-pane">
-
-                    <umb-control-group label="Key" description="Name of the Defined Content key">
-                        <input type="text" class="umb-editor umb-textstring" ng-model="record.Key" required />
-                    </umb-control-group>
 
                     <umb-control-group label="Resolution" description="Specify resolution">
                         <div style="min-height:40px;">

@@ -45,6 +45,7 @@ namespace DefinedContent.Models
 		[XmlElement]
 		public List<PropertyDefault> PropertyDefaults { get; set; }
 
+		[XmlIgnore]
 		public List<DefinedContentItem> Children { get; set; }
 
 		#endregion

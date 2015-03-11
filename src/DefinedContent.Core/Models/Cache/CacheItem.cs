@@ -14,7 +14,7 @@ namespace DefinedContent.Models.Cache
 		public CacheItem(DefinedContentItem item)
 		{
 			this.Key = item.Key;
-
+			this.DefinedContentItem = item;
 		}
 
 		public abstract int ResolveId(int? currentPageId = null);

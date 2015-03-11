@@ -57,8 +57,11 @@ namespace DefinedContent.UI
             menu.Items.Add(m);
 
             if (id != "-1")
+            {
                 menu.Items.Add<ActionDelete>("Delete", additionalData: new Dictionary<string, object> { { "id", id } });
+            }
 
+            menu.Items.Add<ActionRefresh>("Refresh");
             return menu;
         }
     }

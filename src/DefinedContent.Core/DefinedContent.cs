@@ -39,15 +39,21 @@ namespace DefinedContent
 
 		UmbracoHelper _umbraco;
 		IContentService _contentService;
+		string _configDirectory;
 
 		#endregion
 
 		#region Constructors
 
-		protected DefinedContent()
+		public DefinedContent(string configDirectory = "")
 		{
 			_umbraco = new UmbracoHelper(UmbracoContext.Current);
 			_contentService = UmbracoContext.Current.Application.Services.ContentService;
+
+			if (string.IsNullOrEmpty(configDirectory))
+				_configDirectory = HttpContext.Current.Server.MapPath("~/") + Constants.CONFIG_DIRECTORY;
+			else
+				_configDirectory = configDirectory;
 
 			FullRefresh();
 		}
@@ -159,17 +165,20 @@ namespace DefinedContent
 			SetPropertyDefaults();
 		}
 
-		/// <summary>
-		/// Ensures duplicate 
-		/// </summary>
-		/// <param name="item"></param>
-		/// <param name="resolvedNodeId"></param>
-		public void AddToCache(DefinedContentItem item, int resolvedNodeId)
+		public void AddStaticItemToCache(DefinedContentItem item, int resolvedNodeId)
 		{
 			if (this.KeyToNodeIdCache.ContainsKey(item.Key))
 				throw new Exception("Duplicate key detected " + item.Key);
 
 			this.KeyToNodeIdCache.Add(item.Key, new StaticCacheItem(item, resolvedNodeId));
+		}
+
+		public void AddRelativeItemToCache(DefinedContentItem item)
+		{
+			if (this.KeyToNodeIdCache.ContainsKey(item.Key))
+				throw new Exception("Duplicate key detected " + item.Key);
+
+			this.KeyToNodeIdCache.Add(item.Key, new RelativeCacheItem(item));
 		}
 
 		#endregion
@@ -181,9 +190,7 @@ namespace DefinedContent
 		/// </summary>
 		protected void LoadXmlConfigs()
 		{
-			string xmlConfigDirectoryPath = HttpContext.Current.Server.MapPath("~/") + Constants.CONFIG_DIRECTORY;
-
-			DirectoryInfo configDirectory = new DirectoryInfo(xmlConfigDirectoryPath);
+			DirectoryInfo configDirectory = new DirectoryInfo(_configDirectory);
 
 			RecursivelyLoadDirectory(configDirectory);
 		}
@@ -192,23 +199,30 @@ namespace DefinedContent
 		{
 			var configFile = new FileInfo(configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME);
 
-			XmlSerializer serializer = new XmlSerializer(typeof(DefinedContentItem));
-			using (FileStream fs = System.IO.File.OpenRead(configFile.FullName))
+			string configFilePath = configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME;
+            var item = new DefinedContentItem();
+            item.Key = "DefinedContentRoot";
+
+			if (System.IO.File.Exists(configFilePath))
 			{
-				DefinedContentItem item = (DefinedContentItem)serializer.Deserialize(fs);
-				item.FilePath = configFile.FullName;
+				XmlSerializer serializer = new XmlSerializer(typeof(DefinedContentItem));
 
-				if (parent == null)
-					this.ContentItems.Add(item);
-				else
-					parent.Children.Add(item);
-
-
-				var subDirs = configDirectory.GetDirectories();
-				foreach (var subDir in subDirs)
+				using (FileStream fs = System.IO.File.OpenRead(configFilePath))
 				{
-					RecursivelyLoadDirectory(subDir, item);
+					item = (DefinedContentItem)serializer.Deserialize(fs);
+					item.FilePath = configFilePath;
+
+					if (parent == null)
+						this.ContentItems.Add(item);
+					else
+						parent.Children.Add(item);
 				}
+			}
+
+			var subDirs = configDirectory.GetDirectories();
+			foreach (var subDir in subDirs)
+			{
+				RecursivelyLoadDirectory(subDir, item);
 			}
 		}
 
@@ -225,10 +239,7 @@ namespace DefinedContent
 			{
 				ResolveNodeId(contentItems[i]);
 
-				foreach (DefinedContentItem child in contentItems[i].Children)
-				{
-					ResolveNodeId(child);
-				}
+				BuildCache(contentItems[i].Children);
 			}
 
 			while (this.AwaitingResolution.Count > 0)
@@ -263,7 +274,7 @@ namespace DefinedContent
 			}
 
 			if (nodeId.HasValue)
-				AddToCache(item, nodeId.Value);
+				AddStaticItemToCache(item, nodeId.Value);
 		}
 
 		/// <summary>
@@ -313,12 +324,18 @@ namespace DefinedContent
 		/// <param name="item">Defined Content Item to match</param>
 		private int? ResolveItemByXPath(DefinedContentItem item)
 		{
-			var resolvedNode = _umbraco.TypedContentAtXPath(item.ResolveValue);
+			if (item.ResolveValue.Contains("$currentPage"))
+			{
+				AddRelativeItemToCache(item);
+				return null;
+			}
 
-			if (resolvedNode == null)
+			int? resolvedNode = XPathResolver.ResolveStatic(item.ResolveValue, false);
+
+			if (!resolvedNode.HasValue)
 				return CreateItem(item);
 			else
-				return resolvedNode.First().Id;
+				return resolvedNode.Value;
 		}
 
 		#endregion
@@ -384,12 +401,12 @@ namespace DefinedContent
 
 		private int? ResolveParentByKey(DefinedContentItem item)
 		{
-			throw new NotImplementedException();
+			return TryGetId(item.Parent);
 		}
 
 		private int? ResolveParentByXPath(DefinedContentItem item)
 		{
-			throw new NotImplementedException();
+			return XPathResolver.ResolveStatic(item.Parent);
 		}
 
 		#region Set Property Defaults
@@ -398,13 +415,34 @@ namespace DefinedContent
 		{
 			foreach (DefinedContentItem item in this.CreatedItems)
 			{
-				SetPropertyDefaults(item);
+				IContent contentItem = _contentService.GetById(GetId(item.Key));
+
+				SetPropertyDefaults(item, contentItem);
+
+				_contentService.SaveAndPublishWithStatus(contentItem);
 			}
 		}
 
-		private void SetPropertyDefaults(DefinedContentItem item)
+		private void SetPropertyDefaults(DefinedContentItem item, IContent contentItem)
 		{
+			foreach (PropertyDefault property in item.PropertyDefaults)
+			{
+				string propertyValue = "";
 
+				switch (property.ValueType)
+				{
+					case PropertyDefaultValueType.Key:
+						propertyValue = GetId(property.Value).ToString();
+						break;
+					case PropertyDefaultValueType.StaticValue:
+						propertyValue = property.Value;
+						break;
+					default:
+						throw new Exception("Unknown property default value type for property " + property.PropertyAlias + " on key " + item.Key);
+				}
+
+				contentItem.SetValue(property.PropertyAlias, propertyValue);
+			}
 		}
 
 		#endregion

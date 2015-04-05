@@ -39,7 +39,7 @@ namespace DefinedContent
 
 		protected UmbracoHelper Umbraco
 		{
-			get { return new UmbracoHelper(UmbracoContext.Current);  }
+			get { return new UmbracoHelper(UmbracoContext.Current); }
 		}
 
 		IContentService _contentService;
@@ -255,6 +255,9 @@ namespace DefinedContent
 					item = (DefinedContentItem)serializer.Deserialize(fs);
 					item.FilePath = configFilePath;
 
+					if (string.IsNullOrEmpty(item.Parent) && parent != null)
+						item.Parent = parent.Key;
+
 					if (parent == null)
 						this.ContentItems.Add(item);
 					else
@@ -466,21 +469,24 @@ namespace DefinedContent
 		{
 			foreach (PropertyDefault property in item.PropertyDefaults)
 			{
-				string propertyValue = "";
-
-				switch (property.ValueType)
+				if (!string.IsNullOrEmpty(property.PropertyAlias) && !string.IsNullOrEmpty(property.Value))
 				{
-					case PropertyDefaultValueType.Key:
-						propertyValue = GetId(property.Value).ToString();
-						break;
-					case PropertyDefaultValueType.StaticValue:
-						propertyValue = property.Value;
-						break;
-					default:
-						throw new Exception("Unknown property default value type for property " + property.PropertyAlias + " on key " + item.Key);
-				}
+					string propertyValue = "";
 
-				contentItem.SetValue(property.PropertyAlias, propertyValue);
+					switch (property.ValueType)
+					{
+						case PropertyDefaultValueType.Key:
+							propertyValue = GetId(property.Value).ToString();
+							break;
+						case PropertyDefaultValueType.StaticValue:
+							propertyValue = property.Value;
+							break;
+						default:
+							throw new Exception("Unknown property default value type for property " + property.PropertyAlias + " on key " + item.Key);
+					}
+
+					contentItem.SetValue(property.PropertyAlias, propertyValue);
+				}
 			}
 		}
 

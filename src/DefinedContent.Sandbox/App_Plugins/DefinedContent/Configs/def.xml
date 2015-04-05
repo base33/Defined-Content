@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<DefinedContentItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Key="DefinedContentRoot" ResolveType="ContentId" ResolveValue="12" ItemType="Resolve" ContentTypeAlias="" Name="" Parent="">
-  <ParentType>Key</ParentType>
-  <PropertyDefaults PropertyAlias="" ValueType="StaticValue" Value="" />
-  <Children />
-</DefinedContentItem>

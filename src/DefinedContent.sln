@@ -1,13 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefinedContent.Core", "DefinedContent.Core\DefinedContent.Core.csproj", "{CC84AE8D-B9A1-4F95-BD37-34ED9B581B4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefinedContent.Sandbox", "DefinedContent.Sandbox\DefinedContent.Sandbox.csproj", "{FF3E92A7-F68D-4E3D-AB47-EDB4EBBA8F78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefinedContent.UI", "DefinedContent.UI\DefinedContent.UI.csproj", "{15187B08-0B1F-4868-AF4B-FE1775051B66}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6799ABC2-00E2-4B2E-9EDB-F709F1FC1990}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

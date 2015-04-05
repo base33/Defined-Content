@@ -16,7 +16,7 @@ namespace DefinedContent.WebApi
 		{
 			try
 			{
-				DefinedContent.Current.FullRefresh();
+				DefinedContent.Cache.FullRefresh();
 
 				return true;
 			}
@@ -29,13 +29,13 @@ namespace DefinedContent.WebApi
 		[HttpGet]
 		public int GetId(string key)
 		{
-			return DefinedContent.Current.GetId(key);
+			return DefinedContent.Cache.GetId(key);
 		}
 
 		[HttpGet]
 		public DefinedContentItem GetDefinedContentItem(string key)
 		{
-			return DefinedContent.Current.GetDefinedContentItem(key);
+			return DefinedContent.Cache.GetDefinedContentItem(key);
 		}
 
 		[HttpGet]

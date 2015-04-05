@@ -20,11 +20,11 @@ namespace DefinedContent
 	{
 		#region Singleton
 
-		public static DefinedContent Current { get; private set; }
+		public static DefinedContent Cache { get; private set; }
 
 		static DefinedContent()
 		{
-			Current = new DefinedContent();
+			Cache = new DefinedContent();
 		}
 
 		#endregion
@@ -64,17 +64,32 @@ namespace DefinedContent
 
 		public static int Id(string key)
 		{
-			return Current.GetId(key);
+			return Cache.GetId(key);
 		}
 
-		public static int Id(string key, int currentPage)
+		public static int Id(string key, int currentPageId)
 		{
-			return Current.GetId(key, currentPage);
+			return Cache.GetId(key, currentPageId);
+		}
+
+		public static int? TryGetId(string key)
+		{
+			return Cache.AttemptGetId(key);
+		}
+
+		public static int? TryGetId(string key, int currentPageId)
+		{
+			return Cache.AttemptGetId(key, currentPageId);
 		}
 
 		public static IPublishedContent TypedContent(string key)
 		{
-			return Current.GetTypedContent(key);
+			return Cache.GetTypedContent(key);
+		}
+
+		public static IPublishedContent TypedContent(string key, int currentPageId)
+		{
+			return Cache.GetTypedContent(key, currentPageId);
 		}
 
 		#endregion
@@ -97,12 +112,20 @@ namespace DefinedContent
 			return this.KeyToNodeIdCache[key].ResolveId(currentPageId);
 		}
 
-		public int? TryGetId(string key)
+		public int? AttemptGetId(string key)
 		{
 			if (!this.KeyToNodeIdCache.ContainsKey(key))
 				return null;
 
 			return this.KeyToNodeIdCache[key].ResolveId();
+		}
+
+		public int? AttemptGetId(string key, int currentPageId)
+		{
+			if (!this.KeyToNodeIdCache.ContainsKey(key))
+				return null;
+
+			return this.KeyToNodeIdCache[key].ResolveId(currentPageId);
 		}
 
 		public DefinedContentItem GetDefinedContentItem(string key)
@@ -126,7 +149,6 @@ namespace DefinedContent
 
             foreach (var item in current.Children)
             {
-                source.Add(item);
                 PopulateList(source, item);
             }
         }
@@ -138,13 +160,20 @@ namespace DefinedContent
 			return _umbraco.TypedContent(id);
 		}
 
+		public IPublishedContent GetTypedContent(string key, int currentPageId)
+		{
+			int id = GetId(key, currentPageId);
+
+			return _umbraco.TypedContent(id);
+		}
+
         /// <summary>
         /// Returns all defined content items that have no parents
         /// </summary>
         /// <returns></returns>
         public IEnumerable<DefinedContentItem> GetRootDefinedContentItems()
         {
-            return ContentItems.First(c => c.Key == "DefinedContentRoot").Children;
+			return ContentItems;
         }
 
 		/// <summary>
@@ -162,6 +191,10 @@ namespace DefinedContent
 
 			LoadXmlConfigs();
 			BuildCache(this.ContentItems);
+			while (this.AwaitingResolution.Count > 0)
+			{
+				BuildCache(this.AwaitingResolution);
+			}
 			SetPropertyDefaults();
 		}
 
@@ -200,8 +233,7 @@ namespace DefinedContent
 			var configFile = new FileInfo(configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME);
 
 			string configFilePath = configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME;
-            var item = new DefinedContentItem();
-            item.Key = "DefinedContentRoot";
+			DefinedContentItem item = null; 
 
 			if (System.IO.File.Exists(configFilePath))
 			{
@@ -237,14 +269,12 @@ namespace DefinedContent
 		{
 			for (int i = 0; i < contentItems.Count; i++)
 			{
-				ResolveNodeId(contentItems[i]);
+				DefinedContentItem item = contentItems[i];
 
-				BuildCache(contentItems[i].Children);
-			}
+				ResolveNodeId(item);
 
-			while (this.AwaitingResolution.Count > 0)
-			{
-				BuildCache(this.AwaitingResolution);
+				if (item.Children.Count > 0)
+					BuildCache(item.Children);
 			}
 		}
 
@@ -254,8 +284,6 @@ namespace DefinedContent
 		/// <param name="item">Defined Content Item to match</param>
 		private void ResolveNodeId(DefinedContentItem item)
 		{
-            if (item.Key == "DefinedContentRoot") return;
-
 			int? nodeId = null;
 
 			switch (item.ResolveType)
@@ -302,7 +330,7 @@ namespace DefinedContent
 		/// <param name="item">Defined Content Item to match</param>
 		private int? ResolveItemByKey(DefinedContentItem item)
 		{
-			int? nodeId = TryGetId(item.ResolveValue);
+			int? nodeId = AttemptGetId(item.ResolveValue);
 
 			if (!nodeId.HasValue)
 			{
@@ -401,7 +429,7 @@ namespace DefinedContent
 
 		private int? ResolveParentByKey(DefinedContentItem item)
 		{
-			return TryGetId(item.Parent);
+			return AttemptGetId(item.Parent);
 		}
 
 		private int? ResolveParentByXPath(DefinedContentItem item)

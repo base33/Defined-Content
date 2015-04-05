@@ -1,3 +1,5 @@
+## Defined Content
+
 DefinedContent is a plugin for [Umbraco](http://www.umbraco.com) that solves the problem of hard coding Node Ids in templates and C# code.
 
 #### User Documentation:

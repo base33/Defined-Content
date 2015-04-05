@@ -130,8 +130,7 @@ namespace DefinedContent
 
 		public DefinedContentItem GetDefinedContentItem(string key)
 		{
-            var contentItemsFlat = new List<DefinedContentItem>();
-            PopulateList(contentItemsFlat, this.ContentItems.First());
+            var contentItemsFlat = GetFlatList(this.ContentItems);
 
             var item = (from ci in contentItemsFlat
 						where ci.Key == key
@@ -143,15 +142,19 @@ namespace DefinedContent
 			return item;
         }
 
-        void PopulateList(List<DefinedContentItem> source, DefinedContentItem current)
-        {
-            source.Add(current);
+		private List<DefinedContentItem> GetFlatList(List<DefinedContentItem> contentItems)
+		{
+			List<DefinedContentItem> flatList = new List<DefinedContentItem>();
 
-            foreach (var item in current.Children)
-            {
-                PopulateList(source, item);
-            }
-        }
+			foreach (var contentItem in contentItems)
+			{
+				flatList.Add(contentItem);
+
+				flatList.AddRange(GetFlatList(contentItem.Children));
+			}
+
+			return flatList;
+		}
 
 		public IPublishedContent GetTypedContent(string key)
 		{

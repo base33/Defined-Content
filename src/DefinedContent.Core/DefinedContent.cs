@@ -37,7 +37,11 @@ namespace DefinedContent
 		protected List<DefinedContentItem> AwaitingResolution { get; set; }
 		protected List<DefinedContentItem> CreatedItems { get; set; }
 
-		UmbracoHelper _umbraco;
+		protected UmbracoHelper Umbraco
+		{
+			get { return new UmbracoHelper(UmbracoContext.Current);  }
+		}
+
 		IContentService _contentService;
 		string _configDirectory;
 
@@ -47,7 +51,6 @@ namespace DefinedContent
 
 		public DefinedContent(string configDirectory = "")
 		{
-			_umbraco = new UmbracoHelper(UmbracoContext.Current);
 			_contentService = UmbracoContext.Current.Application.Services.ContentService;
 
 			if (string.IsNullOrEmpty(configDirectory))
@@ -114,25 +117,33 @@ namespace DefinedContent
 
 		public int? AttemptGetId(string key)
 		{
-			if (!this.KeyToNodeIdCache.ContainsKey(key))
-				return null;
+			try
+			{
+				if (!this.KeyToNodeIdCache.ContainsKey(key))
+					return null;
 
-			return this.KeyToNodeIdCache[key].ResolveId();
+				return this.KeyToNodeIdCache[key].ResolveId();
+			}
+			catch { return null; }
 		}
 
 		public int? AttemptGetId(string key, int currentPageId)
 		{
-			if (!this.KeyToNodeIdCache.ContainsKey(key))
-				return null;
+			try
+			{
+				if (!this.KeyToNodeIdCache.ContainsKey(key))
+					return null;
 
-			return this.KeyToNodeIdCache[key].ResolveId(currentPageId);
+				return this.KeyToNodeIdCache[key].ResolveId(currentPageId);
+			}
+			catch { return null; }
 		}
 
 		public DefinedContentItem GetDefinedContentItem(string key)
 		{
-            var contentItemsFlat = GetFlatList(this.ContentItems);
+			var contentItemsFlat = GetFlatList(this.ContentItems);
 
-            var item = (from ci in contentItemsFlat
+			var item = (from ci in contentItemsFlat
 						where ci.Key == key
 						select ci).FirstOrDefault();
 
@@ -140,7 +151,7 @@ namespace DefinedContent
 				throw new Exception("Unknown key " + key);
 
 			return item;
-        }
+		}
 
 		private List<DefinedContentItem> GetFlatList(List<DefinedContentItem> contentItems)
 		{
@@ -160,33 +171,30 @@ namespace DefinedContent
 		{
 			int id = GetId(key);
 
-			return _umbraco.TypedContent(id);
+			return Umbraco.TypedContent(id);
 		}
 
 		public IPublishedContent GetTypedContent(string key, int currentPageId)
 		{
 			int id = GetId(key, currentPageId);
 
-			return _umbraco.TypedContent(id);
+			return Umbraco.TypedContent(id);
 		}
 
-        /// <summary>
-        /// Returns all defined content items that have no parents
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<DefinedContentItem> GetRootDefinedContentItems()
-        {
+		/// <summary>
+		/// Returns all defined content items that have no parents
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<DefinedContentItem> GetRootDefinedContentItems()
+		{
 			return ContentItems;
-        }
+		}
 
 		/// <summary>
 		/// Reloads XML configs, ensures all content exists and rebuilds the defined content cache
 		/// </summary>
 		public void FullRefresh(UmbracoContext umbracoContext = null)
 		{
-			if (umbracoContext != null)
-				_umbraco = new UmbracoHelper(umbracoContext);
-
 			this.ContentItems = new List<DefinedContentItem>();
 			this.KeyToNodeIdCache = new Dictionary<string, CacheItem>();
 			this.AwaitingResolution = new List<DefinedContentItem>();
@@ -236,7 +244,7 @@ namespace DefinedContent
 			var configFile = new FileInfo(configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME);
 
 			string configFilePath = configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME;
-			DefinedContentItem item = null; 
+			DefinedContentItem item = null;
 
 			if (System.IO.File.Exists(configFilePath))
 			{
@@ -314,7 +322,7 @@ namespace DefinedContent
 		/// <param name="item"></param>
 		private int? ResolveItemById(DefinedContentItem item, bool errorOnNotExists = true)
 		{
-			IPublishedContent resolvedNode = _umbraco.TypedContent(item.ResolveValue);
+			IPublishedContent resolvedNode = Umbraco.TypedContent(item.ResolveValue);
 
 			if (resolvedNode == null)
 			{
@@ -417,7 +425,7 @@ namespace DefinedContent
 
 		private int? ResolveParentById(DefinedContentItem item, bool errorOnNotExists = true)
 		{
-			IPublishedContent resolvedNode = _umbraco.TypedContent(item.Parent);
+			IPublishedContent resolvedNode = Umbraco.TypedContent(item.Parent);
 
 			if (resolvedNode == null)
 			{

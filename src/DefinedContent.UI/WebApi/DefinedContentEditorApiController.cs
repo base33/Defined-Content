@@ -88,6 +88,9 @@ namespace DefinedContent.UI.WebApi
 
 				if (string.IsNullOrEmpty(model.ParentResolveType))
 					errors.Add("In order for creation to work, you must specify how we should resolve the parent node.");
+
+				if (model.ResolveValue.Contains("$currentPage"))
+					errors.Add("In order for creation to work, you cannot use a relative resolve XPath. Please re-write your resolve XPath without $currentPage");
 			}
 
 			return errors;

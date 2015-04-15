@@ -19,8 +19,8 @@ namespace DefinedContent.UI
         {
             // check if we're rendering the root node's children
             var items = id == RealUmbraco.Core.Constants.System.Root.ToInvariantString()
-                ? DefinedContent.Current.GetRootDefinedContentItems()
-                : DefinedContent.Current.GetDefinedContentItem(id).Children;
+                ? DefinedContent.Cache.GetRootDefinedContentItems()
+                : DefinedContent.Cache.GetDefinedContentItem(id).Children;
             
             // empty tree
             //var tree = new TreeNodeCollection()

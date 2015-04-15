@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<DefinedContentItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+					Key="davesTextPage" ResolveType="XPath" ResolveValue="//*/umbTextPage[@nodeName='Daves Text Page']" 
+					ItemType="CreateAndResolve" ContentTypeAlias="umbTextPage" Name="Daves Text Page" Parent="">
+	<ParentType>Key</ParentType>
+	<PropertyDefaults PropertyAlias="bodyText" ValueType="StaticValue" Value="Some value here" />
+</DefinedContentItem>

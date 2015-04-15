@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<DefinedContentItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+					Key="blog" ResolveType="XPath" ResolveValue="//*/BlogLandingPage [@nodeName='Blog']" 
+					ItemType="CreateAndResolve" ContentTypeAlias="BlogLandingPage" Name="Blog" Parent="home">
+	<ParentType>Key</ParentType>
+</DefinedContentItem>

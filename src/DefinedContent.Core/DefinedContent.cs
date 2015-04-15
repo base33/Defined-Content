@@ -20,11 +20,11 @@ namespace DefinedContent
 	{
 		#region Singleton
 
-		public static DefinedContent Current { get; private set; }
+		public static DefinedContent Cache { get; private set; }
 
 		static DefinedContent()
 		{
-			Current = new DefinedContent();
+			Cache = new DefinedContent();
 		}
 
 		#endregion
@@ -37,7 +37,11 @@ namespace DefinedContent
 		protected List<DefinedContentItem> AwaitingResolution { get; set; }
 		protected List<DefinedContentItem> CreatedItems { get; set; }
 
-		UmbracoHelper _umbraco;
+		protected UmbracoHelper Umbraco
+		{
+			get { return new UmbracoHelper(UmbracoContext.Current); }
+		}
+
 		IContentService _contentService;
 		string _configDirectory;
 
@@ -47,7 +51,6 @@ namespace DefinedContent
 
 		public DefinedContent(string configDirectory = "")
 		{
-			_umbraco = new UmbracoHelper(UmbracoContext.Current);
 			_contentService = UmbracoContext.Current.Application.Services.ContentService;
 
 			if (string.IsNullOrEmpty(configDirectory))
@@ -64,17 +67,32 @@ namespace DefinedContent
 
 		public static int Id(string key)
 		{
-			return Current.GetId(key);
+			return Cache.GetId(key);
 		}
 
-		public static int Id(string key, int currentPage)
+		public static int Id(string key, int currentPageId)
 		{
-			return Current.GetId(key, currentPage);
+			return Cache.GetId(key, currentPageId);
+		}
+
+		public static int? TryGetId(string key)
+		{
+			return Cache.AttemptGetId(key);
+		}
+
+		public static int? TryGetId(string key, int currentPageId)
+		{
+			return Cache.AttemptGetId(key, currentPageId);
 		}
 
 		public static IPublishedContent TypedContent(string key)
 		{
-			return Current.GetTypedContent(key);
+			return Cache.GetTypedContent(key);
+		}
+
+		public static IPublishedContent TypedContent(string key, int currentPageId)
+		{
+			return Cache.GetTypedContent(key, currentPageId);
 		}
 
 		#endregion
@@ -97,20 +115,35 @@ namespace DefinedContent
 			return this.KeyToNodeIdCache[key].ResolveId(currentPageId);
 		}
 
-		public int? TryGetId(string key)
+		public int? AttemptGetId(string key)
 		{
-			if (!this.KeyToNodeIdCache.ContainsKey(key))
-				return null;
+			try
+			{
+				if (!this.KeyToNodeIdCache.ContainsKey(key))
+					return null;
 
-			return this.KeyToNodeIdCache[key].ResolveId();
+				return this.KeyToNodeIdCache[key].ResolveId();
+			}
+			catch { return null; }
+		}
+
+		public int? AttemptGetId(string key, int currentPageId)
+		{
+			try
+			{
+				if (!this.KeyToNodeIdCache.ContainsKey(key))
+					return null;
+
+				return this.KeyToNodeIdCache[key].ResolveId(currentPageId);
+			}
+			catch { return null; }
 		}
 
 		public DefinedContentItem GetDefinedContentItem(string key)
 		{
-            var contentItemsFlat = new List<DefinedContentItem>();
-            PopulateList(contentItemsFlat, this.ContentItems.First());
+			var contentItemsFlat = GetFlatList(this.ContentItems);
 
-            var item = (from ci in contentItemsFlat
+			var item = (from ci in contentItemsFlat
 						where ci.Key == key
 						select ci).FirstOrDefault();
 
@@ -118,43 +151,50 @@ namespace DefinedContent
 				throw new Exception("Unknown key " + key);
 
 			return item;
-        }
+		}
 
-        void PopulateList(List<DefinedContentItem> source, DefinedContentItem current)
-        {
-            source.Add(current);
+		private List<DefinedContentItem> GetFlatList(List<DefinedContentItem> contentItems)
+		{
+			List<DefinedContentItem> flatList = new List<DefinedContentItem>();
 
-            foreach (var item in current.Children)
-            {
-                source.Add(item);
-                PopulateList(source, item);
-            }
-        }
+			foreach (var contentItem in contentItems)
+			{
+				flatList.Add(contentItem);
+
+				flatList.AddRange(GetFlatList(contentItem.Children));
+			}
+
+			return flatList;
+		}
 
 		public IPublishedContent GetTypedContent(string key)
 		{
 			int id = GetId(key);
 
-			return _umbraco.TypedContent(id);
+			return Umbraco.TypedContent(id);
 		}
 
-        /// <summary>
-        /// Returns all defined content items that have no parents
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<DefinedContentItem> GetRootDefinedContentItems()
-        {
+		public IPublishedContent GetTypedContent(string key, int currentPageId)
+		{
+			int id = GetId(key, currentPageId);
+
+			return Umbraco.TypedContent(id);
+		}
+
+		/// <summary>
+		/// Returns all defined content items that have no parents
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<DefinedContentItem> GetRootDefinedContentItems()
+		{
 			return ContentItems;
-        }
+		}
 
 		/// <summary>
 		/// Reloads XML configs, ensures all content exists and rebuilds the defined content cache
 		/// </summary>
 		public void FullRefresh(UmbracoContext umbracoContext = null)
 		{
-			if (umbracoContext != null)
-				_umbraco = new UmbracoHelper(umbracoContext);
-
 			this.ContentItems = new List<DefinedContentItem>();
 			this.KeyToNodeIdCache = new Dictionary<string, CacheItem>();
 			this.AwaitingResolution = new List<DefinedContentItem>();
@@ -162,6 +202,10 @@ namespace DefinedContent
 
 			LoadXmlConfigs();
 			BuildCache(this.ContentItems);
+			while (this.AwaitingResolution.Count > 0)
+			{
+				BuildCache(this.AwaitingResolution);
+			}
 			SetPropertyDefaults();
 		}
 
@@ -211,6 +255,9 @@ namespace DefinedContent
 					item = (DefinedContentItem)serializer.Deserialize(fs);
 					item.FilePath = configFilePath;
 
+					if (string.IsNullOrEmpty(item.Parent) && parent != null)
+						item.Parent = parent.Key;
+
 					if (parent == null)
 						this.ContentItems.Add(item);
 					else
@@ -236,14 +283,12 @@ namespace DefinedContent
 		{
 			for (int i = 0; i < contentItems.Count; i++)
 			{
-				ResolveNodeId(contentItems[i]);
+				DefinedContentItem item = contentItems[i];
 
-				BuildCache(contentItems[i].Children);
-			}
+				ResolveNodeId(item);
 
-			while (this.AwaitingResolution.Count > 0)
-			{
-				BuildCache(this.AwaitingResolution);
+				if (item.Children.Count > 0)
+					BuildCache(item.Children);
 			}
 		}
 
@@ -280,7 +325,7 @@ namespace DefinedContent
 		/// <param name="item"></param>
 		private int? ResolveItemById(DefinedContentItem item, bool errorOnNotExists = true)
 		{
-			IPublishedContent resolvedNode = _umbraco.TypedContent(item.ResolveValue);
+			IPublishedContent resolvedNode = Umbraco.TypedContent(item.ResolveValue);
 
 			if (resolvedNode == null)
 			{
@@ -299,7 +344,7 @@ namespace DefinedContent
 		/// <param name="item">Defined Content Item to match</param>
 		private int? ResolveItemByKey(DefinedContentItem item)
 		{
-			int? nodeId = TryGetId(item.ResolveValue);
+			int? nodeId = AttemptGetId(item.ResolveValue);
 
 			if (!nodeId.HasValue)
 			{
@@ -383,7 +428,7 @@ namespace DefinedContent
 
 		private int? ResolveParentById(DefinedContentItem item, bool errorOnNotExists = true)
 		{
-			IPublishedContent resolvedNode = _umbraco.TypedContent(item.Parent);
+			IPublishedContent resolvedNode = Umbraco.TypedContent(item.Parent);
 
 			if (resolvedNode == null)
 			{
@@ -398,7 +443,7 @@ namespace DefinedContent
 
 		private int? ResolveParentByKey(DefinedContentItem item)
 		{
-			return TryGetId(item.Parent);
+			return AttemptGetId(item.Parent);
 		}
 
 		private int? ResolveParentByXPath(DefinedContentItem item)
@@ -424,21 +469,24 @@ namespace DefinedContent
 		{
 			foreach (PropertyDefault property in item.PropertyDefaults)
 			{
-				string propertyValue = "";
-
-				switch (property.ValueType)
+				if (!string.IsNullOrEmpty(property.PropertyAlias) && !string.IsNullOrEmpty(property.Value))
 				{
-					case PropertyDefaultValueType.Key:
-						propertyValue = GetId(property.Value).ToString();
-						break;
-					case PropertyDefaultValueType.StaticValue:
-						propertyValue = property.Value;
-						break;
-					default:
-						throw new Exception("Unknown property default value type for property " + property.PropertyAlias + " on key " + item.Key);
-				}
+					string propertyValue = "";
 
-				contentItem.SetValue(property.PropertyAlias, propertyValue);
+					switch (property.ValueType)
+					{
+						case PropertyDefaultValueType.Key:
+							propertyValue = GetId(property.Value).ToString();
+							break;
+						case PropertyDefaultValueType.StaticValue:
+							propertyValue = property.Value;
+							break;
+						default:
+							throw new Exception("Unknown property default value type for property " + property.PropertyAlias + " on key " + item.Key);
+					}
+
+					contentItem.SetValue(property.PropertyAlias, propertyValue);
+				}
 			}
 		}
 

@@ -1,0 +1,27 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "umbLayout.cshtml";
+
+	//DefinedContent.Id will return the integer id of the given key
+	//It will throw an exception if the key is not found
+	int homeNodeId = DefinedContent.Id("home");
+
+	//DefinedContent.TypedContent will return an IPublishedContent object for the id returned by the given key
+	//Again this will throw an Exception if the key is not found
+	IPublishedContent newsNode = DefinedContent.TypedContent("news");
+
+
+	//To avoid throwing exceptions for missing keys there is a TryGetId method which returns a nullable int
+	//This can be used to check for the presence of a key without wrapping a call in a Try / Catch
+	//This method will never throw an exception
+	IPublishedContent blogNode = null;
+	int? blogNodeId = DefinedContent.TryGetId("blog");
+	if (blogNodeId.HasValue)
+	{
+		blogNode = Umbraco.TypedContent(blogNodeId.Value);
+	}
+	
+	
+		
+}
+

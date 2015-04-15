@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<DefinedContentItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					Key="gettingStartedPage" ResolveType="XPath" 
+					ResolveValue="//*/umbTextPage[@nodeName='Getting Started']" ItemType="CreateAndResolve" 
+					ContentTypeAlias="umbTextPage" Name="Getting Started" Parent="">
+	<ParentType>Key</ParentType>
+	<PropertyDefaults PropertyAlias="" ValueType="StaticValue" Value="" />
+</DefinedContentItem>

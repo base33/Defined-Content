@@ -144,7 +144,7 @@ namespace DefinedContent
         /// <returns></returns>
         public IEnumerable<DefinedContentItem> GetRootDefinedContentItems()
         {
-            return ContentItems.First(c => c.Key == "DefinedContentRoot").Children;
+			return ContentItems;
         }
 
 		/// <summary>
@@ -200,8 +200,7 @@ namespace DefinedContent
 			var configFile = new FileInfo(configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME);
 
 			string configFilePath = configDirectory.FullName + "\\" + Constants.CONFIG_FILE_NAME;
-            var item = new DefinedContentItem();
-            item.Key = "DefinedContentRoot";
+			DefinedContentItem item = null;
 
 			if (System.IO.File.Exists(configFilePath))
 			{
@@ -254,8 +253,6 @@ namespace DefinedContent
 		/// <param name="item">Defined Content Item to match</param>
 		private void ResolveNodeId(DefinedContentItem item)
 		{
-            if (item.Key == "DefinedContentRoot") return;
-
 			int? nodeId = null;
 
 			switch (item.ResolveType)

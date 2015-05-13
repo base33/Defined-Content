@@ -63,13 +63,13 @@ namespace DefinedContent.UI.WebApi
 		}
 
 		[HttpPost]
-		public List<string> ValidateModel(DefinedContentModel model)
+		public List<string> ValidateModel([FromBody]DefinedContentModel model, [FromUri]bool addMode = true)
 		{
 			List<string> errors = new List<string>();
 
 			if (string.IsNullOrEmpty(model.Key))
 				errors.Add("You must specify a unique Key for this Defined Content Item.");
-			else if (DefinedContent.TryGetId(model.Key).HasValue)
+			else if (DefinedContent.TryGetId(model.Key).HasValue && addMode)
 				errors.Add("The Key you specified is not unique, Keys must be unique.");
 
 			if (string.IsNullOrEmpty(model.ResolveType))
@@ -105,5 +105,11 @@ namespace DefinedContent.UI.WebApi
 
 			DefinedContent.Cache.FullRefresh();
 		}
+
+        [HttpGet]
+        public void FullRefresh()
+        {
+            DefinedContent.Cache.FullRefresh();
+        }
 	}
 }

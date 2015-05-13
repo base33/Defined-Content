@@ -4,35 +4,18 @@ angular.module("umbraco").controller("DefinedContent.KeyCreateController", funct
     $scope.isRoot = $routeParams.id == -1;
     $scope.save = function (record) {
         var apiModel = DefinedContent.TypeConverter.ViewModelToApiModel(record);
-        //switch (record.ResolveType) {
-        //    case "xpath":
-        //        apiModel.ResolveValue = record.XPathResolver;
-        //        break;
-        //    case "key":
-        //        apiModel.ResolveValue = record.KeyResolver;
-        //        break;
-        //    case "contentId":
-        //        apiModel.ResolveValue = record.ContentIdResolver;
-        //        break;
-        //}
-        //if ($scope.isRoot) {
-        //    switch (record.ParentResolveType) {
-        //        case "xpath":
-        //            apiModel.ParentKey = record.ParentXPathResolver;
-        //            break;
-        //        case "key":
-        //            apiModel.ParentKey = record.ParentKeyResolver;
-        //            break;
-        //        case "contentId":
-        //            apiModel.ParentKey = record.ParentContentIdResolver;
-        //            break;
-        //    }
-        //}
-        definedContentWebApi.Save(apiModel).success(function (result) {
-            notificationsService.success("Saved");
-            $location.path("/settings/definedContent/edit/" + record.Key);
-        }).error(function (result) {
-            notificationsService.error("Unable to save.  See log");
+        definedContentWebApi.ValidateModel(apiModel, true).success(function (errors) {
+            if (errors.length == 0) {
+                definedContentWebApi.Save(apiModel).success(function (result) {
+                    notificationsService.success("Saved");
+                    $location.path("/settings/definedContent/edit/" + record.Key);
+                }).error(function (result) {
+                    notificationsService.error("Unable to save.  See log");
+                });
+            }
+            else {
+                notificationsService.error(errors.join());
+            }
         });
     };
     $scope.createEnabledStyle = function () {
@@ -80,21 +63,18 @@ angular.module("umbraco").controller("DefinedContent.KeyEditController", functio
     var currentRecord = null;
     $scope.save = function (record) {
         var apiModel = DefinedContent.TypeConverter.ViewModelToApiModel(record);
-        //switch (record.ResolveType) {
-        //    case "xpath":
-        //        apiModel.ResolveValue = record.XPathResolver;
-        //        break;
-        //    case "key":
-        //        apiModel.ResolveValue = record.KeyResolver;
-        //        break;
-        //    case "contentId":
-        //        apiModel.ResolveValue = record.ContentIdResolver;
-        //        break;
-        //}
-        definedContentWebApi.Save(apiModel).success(function (result) {
-            notificationsService.success("Saved");
-        }).error(function (result) {
-            notificationsService.error("Unable to save.  See log");
+        definedContentWebApi.ValidateModel(apiModel, false).success(function (errors) {
+            if (errors.length == 0) {
+                definedContentWebApi.Save(apiModel).success(function (result) {
+                    notificationsService.success("Saved");
+                    record.CreateConfig.PropertyMapping.push(new DefinedContent.PropertyMap()); //insert the additional back up
+                }).error(function (result) {
+                    notificationsService.error("Unable to save.  See log");
+                });
+            }
+            else {
+                notificationsService.error(errors.join());
+            }
         });
     };
     $scope.addProperty = function () {
@@ -141,6 +121,16 @@ angular.module("umbraco").controller("DefinedContent.KeyDeleteController", funct
         navigationService.hideNavigation();
     };
     $scope.cancelDelete = function () {
+        navigationService.hideNavigation();
+    };
+});
+angular.module("umbraco").controller("DefinedContent.FullRefreshController", function ($scope, navigationService, notificationsService, $routeParams, definedContentWebApi) {
+    $scope.doFullRefresh = function (id) {
+        definedContentWebApi.FullRefresh();
+        navigationService.hideNavigation();
+        notificationsService.success("Full refresh triggered");
+    };
+    $scope.cancel = function () {
         navigationService.hideNavigation();
     };
 });

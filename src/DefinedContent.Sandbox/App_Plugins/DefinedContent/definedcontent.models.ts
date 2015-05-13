@@ -43,6 +43,7 @@
             model.CreateConfig = viewModel.CreateConfig;
             model.ResolveType = viewModel.ResolveType;
             model.DefinedContentParent = viewModel.DefinedContentParent;
+            model.CreateConfig.PropertyMapping.pop(); //remove last
             switch (viewModel.ResolveType) {
                 case "xpath":
                     model.ResolveValue = viewModel.XPathResolver;
@@ -112,12 +113,20 @@
             return this.$http.get<DefinedContent.DefinedContentApiModel>("/umbraco/api/DefinedContentEditorApi/Get?key=" + key);
         }
 
+        public ValidateModel(model: DefinedContent.DefinedContentApiModel, addMode: boolean): ng.IHttpPromise<Array<string>> {
+            return this.$http.post("/umbraco/api/DefinedContentEditorApi/ValidateModel?addMode=" + addMode, angular.toJson(model));
+        }
+
         public Save(model: DefinedContent.DefinedContentApiModel): ng.IHttpPromise<boolean> {
             return this.$http.post("/umbraco/api/DefinedContentEditorApi/Save", angular.toJson(model));
         }
 
         public DeleteByKey(key: string): ng.IHttpPromise<boolean> {
             return this.$http.delete("/umbraco/api/DefinedContentEditorApi/Delete?id=" + key);
+        }
+
+        public FullRefresh() {
+            return this.$http.get("/umbraco/api/DefinedContentEditorApi/FullRefresh");
         }
     }
 }

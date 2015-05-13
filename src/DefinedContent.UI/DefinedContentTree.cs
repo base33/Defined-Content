@@ -60,6 +60,10 @@ namespace DefinedContent.UI
             {
                 menu.Items.Add<ActionDelete>("Delete", additionalData: new Dictionary<string, object> { { "id", id } });
             }
+            else
+            {
+                menu.Items.Add<FullRefreshAction>("Full Refresh");
+            }
 
             menu.Items.Add<ActionRefresh>("Refresh");
             return menu;

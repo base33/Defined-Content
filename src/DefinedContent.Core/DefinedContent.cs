@@ -2,6 +2,7 @@
 using DefinedContent.Models;
 using DefinedContent.Models.Cache;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace DefinedContent
 		#region Properties
 
 		protected List<DefinedContentItem> ContentItems { get; set; }
-		protected Dictionary<string, CacheItem> KeyToNodeIdCache { get; set; }
+		protected ConcurrentDictionary<string, CacheItem> KeyToNodeIdCache { get; set; }
 
 		protected List<DefinedContentItem> AwaitingResolution { get; set; }
 		protected List<DefinedContentItem> CreatedItems { get; set; }
@@ -196,7 +197,7 @@ namespace DefinedContent
 		public void FullRefresh(UmbracoContext umbracoContext = null)
 		{
 			this.ContentItems = new List<DefinedContentItem>();
-			this.KeyToNodeIdCache = new Dictionary<string, CacheItem>();
+			this.KeyToNodeIdCache = new ConcurrentDictionary<string, CacheItem>();
 			this.AwaitingResolution = new List<DefinedContentItem>();
 			this.CreatedItems = new List<DefinedContentItem>();
 
@@ -214,7 +215,7 @@ namespace DefinedContent
 			if (this.KeyToNodeIdCache.ContainsKey(item.Key))
 				throw new Exception("Duplicate key detected " + item.Key);
 
-			this.KeyToNodeIdCache.Add(item.Key, new StaticCacheItem(item, resolvedNodeId));
+			this.KeyToNodeIdCache.TryAdd(item.Key, new StaticCacheItem(item, resolvedNodeId));
 		}
 
 		public void AddRelativeItemToCache(DefinedContentItem item)
@@ -222,7 +223,7 @@ namespace DefinedContent
 			if (this.KeyToNodeIdCache.ContainsKey(item.Key))
 				throw new Exception("Duplicate key detected " + item.Key);
 
-			this.KeyToNodeIdCache.Add(item.Key, new RelativeCacheItem(item));
+			this.KeyToNodeIdCache.TryAdd(item.Key, new RelativeCacheItem(item));
 		}
 
 		#endregion

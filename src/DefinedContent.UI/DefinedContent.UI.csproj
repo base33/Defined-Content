@@ -218,6 +218,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefinedContentTree.cs" />
+    <Compile Include="FullRefreshAction.cs" />
     <Compile Include="Helpers\Serialiser.cs" />
     <Compile Include="Helpers\TypeConverter.cs" />
     <Compile Include="Models\CreateModel.cs" />

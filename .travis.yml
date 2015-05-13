@@ -1,2 +1,2 @@
 language: csharp
-solution: DefinedContent.sln
+solution: Src/DefinedContent.sln

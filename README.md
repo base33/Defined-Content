@@ -1,4 +1,4 @@
-## Defined Content [![Build Status](https://travis-ci.org/tombell/travis-ci-status.svg?branch=master)](https://travis-ci.org/tombell/travis-ci-status)
+## Defined Content [![Build Status](https://travis-ci.org/base33/Defined-Content.svg?branch=master)](https://travis-ci.org/base33/Defined-Content)
 
 DefinedContent is a plugin for [Umbraco](http://www.umbraco.com) that solves the problem of hard coding Node Ids in templates and C# code.
 
